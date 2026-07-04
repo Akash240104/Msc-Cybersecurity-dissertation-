@@ -1,0 +1,25 @@
+THE DISSERTATION TOPIC : AI-ASSISTED DETECTION OF SELECTED OWASP AIP TOP 10 ATTACKS USING SPLUNK SIEM 
+
+Objective for Week 1 : 
+  The aim of this week is not to build the final system , but to understand the foundation required for the dissertation.
+
+  My primary focus is to understand : 
+
+    - Why SIEM exists ? 
+      *To solve the impossible tasks of manually monitoring massive scattered IT envieronments. It acts as an organization seccurity "nervous system" by collecting . aggregating and correlating logs in real-time to spot hidden
+       attacks , speed up incident response and simplify compliance audits.Gartner defines SIEM as a configurable system of record that collects, aggregates and analyzes security event data from on-premises and cloud environments.
+
+    - Why Splunk was selected over traditional command-line tools?
+      *WIth its massive achievements of being named a Leader 11 times in a row , Thousands of organizations worldwide rely on Splunk Enterprise Security as their SIEM to rapidly detect and respond to critical events so they cna stay ahead
+       of emerging threats and maintain cyber resilience. With the ability to perform a wide range of security analytics and operations use cases, organizations can remain flexible and agile in the face of evolving threats and business needs.
+
+       source of information for the above questions : (https://www.splunk.com/en_us/form/gartner-siem-magic-quadrant.html?utm_campaign=google_emea_tier1_en_search_generic_security_siem&utm_source=google&utm_medium=cpc&utm_content=GartnerMQ25_AR&utm_term=siem%20security&device=c&_bt=779298826963&_bm=p&_bn=g&gad_source=1&gad_campaignid=8200497833&gbraid=0AAAAAD8kDz2q2SY4u3GmYRJX6lJu7o0JY&gclid=Cj0KCQjw3qLSBhDaARIsAFTiVh6sOd69L44uRyQlCs0-_q1TKdSOs3fZ7OjBfoG6aYnpV6KnwJCDBBoaAj1-EALw_wcB)
+
+
+    - Why APIs have become a major security target?
+      * By nature, APIs expose application logic and sensitive data such as Personally Identifiable Information (PII) and because of this have increasingly become a target for attackers. Without secure APIs, rapid innovation would be impossible.
+        Source: (https://owasp.org/www-project-api-security/)
+    
+    - Why crAPI is more suitable than OWASP Juice Shop for this research?
+      
+    - How each component fits into the overall arcchitecture of the projecct?
