@@ -21,5 +21,20 @@ Objective for Week 1 :
         Source: (https://owasp.org/www-project-api-security/)
     
     - Why crAPI is more suitable than OWASP Juice Shop for this research?
+      crAPI (Completely Ridiculous API) is more suitable than OWASP Juice Shop because the goal is specifically to learn, test, or train for modern API security. While Juice Shop covers traditional web app flaws (like XSS and SQLi), 
+      crAPI focuses directly on the OWASP API Security Top 10 since this project is to mainly focus on the OWASP atacks in specific.
       
-    - How each component fits into the overall arcchitecture of the projecct?
+      
+      
+Current Understanding : 
+At this stage I have a very limited practical knowledge of SIEM platforms, API security and splunk. Rather than going through the randomn tutorials , my goal is to understand every technology from first principles before implementation.
+
+PROTOTYPE GOALS : 
+Develop a minimum viable prototype capable of --- 
+1) Simulating one OWASP attack
+2) Generating the application logs 
+3) Collecting those logs using Splunk
+4) Detecting the attack though a basic SPL detection rule.
+5) Displaying the results using a simple dashboard. 
+
+This prototype will provide the technical foundation for the project/dissertation.
