@@ -38,3 +38,9 @@ Develop a minimum viable prototype capable of ---
 5) Displaying the results using a simple dashboard. 
 
 This prototype will provide the technical foundation for the project/dissertation.
+
+
+A basic flow of work in the project : 
+
+Attack -> Application -> Application generates logs -> Splunk detects suspicious behaviour -> AI helps explain and prioritize alerts -> SOC investigation work..
+                                                                                                     
