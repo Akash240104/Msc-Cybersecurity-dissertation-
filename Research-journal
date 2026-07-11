@@ -43,4 +43,21 @@ This prototype will provide the technical foundation for the project/dissertatio
 A basic flow of work in the project : 
 
 Attack -> Application -> Application generates logs -> Splunk detects suspicious behaviour -> AI helps explain and prioritize alerts -> SOC investigation work..
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+What is a Docker ? 
+Docker is a containerisation platform that packages an application together with all of its dependencies, libraries, and configuration so it can run consistently on different systems.
+
+Important Terms : 
+
+1)Docker Engine - The software we install , like a machine that runs containers/
+2)Docker Image  -  A blue print 
+3)Docker Container - A running instance of an image 
+4)Docker Hub - A giant online library
+
+
+How does docker help in this project or the dissertation  ? 
+
+Run Docker Compose -> Docker creates all required services -> Start testing immediately
                                                                                                      
