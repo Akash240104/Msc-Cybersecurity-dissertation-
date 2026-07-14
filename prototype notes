@@ -1,0 +1,39 @@
+The working notes for the prototype : 
+User
+    │
+    ▼
+Login API
+    │
+Wrong Password
+    │
+    ▼
+crAPI logs event
+    │
+    ▼
+Splunk indexes log
+    │
+    ▼
+SPL query detects failed login
+    │
+    ▼
+Dashboard shows failed authentication events
+
+
+Working flow of a docker be like : 
+Creates a network
+↓
+
+Downloads images
+
+↓
+
+Creates containers
+
+↓
+
+Starts containers
+
+↓
+
+Connects them together
+
