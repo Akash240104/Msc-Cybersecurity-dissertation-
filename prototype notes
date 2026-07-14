@@ -37,3 +37,16 @@ Starts containers
 
 Connects them together
 
+
+The only ones we actively use are : 
+
+Browser
+     │
+crapi-web
+     │
+crapi-identity
+     │
+crapi-workshop
+     │
+Database
+
