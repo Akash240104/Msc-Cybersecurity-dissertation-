@@ -50,3 +50,44 @@ crapi-workshop
      │
 Database
 
+
+
+
+Analysing an API Response
+
+## Objective
+
+Understand the structure of data returned by the API.
+
+## API Endpoint
+
+GET /identity/api/v2/vehicle/vehicles
+
+## Observation
+
+The API returned vehicle information in JSON format.
+
+The response included:
+
+- Vehicle ID
+- UUID
+- VIN
+- PIN
+- Vehicle model
+- Manufacturer
+- Fuel type
+- GPS coordinates
+- Vehicle status
+
+## Key Learning
+
+Unlike traditional websites, modern web applications exchange structured JSON data between the client and the server.
+
+The browser reads this JSON response and dynamically displays the information to the user.
+
+## Security Observation
+
+The response contains unique object identifiers such as the Vehicle ID and UUID.
+
+These identifiers are important because insecure authorization checks around object identifiers can lead to Broken Object Level Authorization (BOLA) vulnerabilities.
+
