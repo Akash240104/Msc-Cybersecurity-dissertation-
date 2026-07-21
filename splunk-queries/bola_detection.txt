@@ -1,0 +1,9 @@
+BOLA DETECTION SPL RULE
+=======================
+index=api_logs "community/posts/recent" 
+| rex field=_raw "(?<attacker_ip>\d+\.\d+\.\d+\.\d+)"
+| stats count by attacker_ip
+| where count > 3
+| eval severity="HIGH"
+| eval attack_type="BOLA - Excessive API Object Access"
+| table attacker_ip count severity attack_type
