@@ -1,0 +1,9 @@
+{
+  "attack": "Broken Authentication",
+  "owasp": "API2:2023",
+  "timestamp": "2026-08-04T23:14:14.328202",
+  "endpoint": "http://localhost:8888/identity/api/auth/login",
+  "attempts": 30,
+  "lockout_detected": false,
+  "severity": "CRITICAL"
+}

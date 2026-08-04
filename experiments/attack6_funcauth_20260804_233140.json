@@ -1,0 +1,15 @@
+{
+  "attack": "Broken Function Level Auth",
+  "owasp": "API5:2023",
+  "timestamp": "2026-08-04T23:31:40.698144",
+  "endpoints_tested": [
+    "/identity/api/v2/admin/users",
+    "/identity/api/v2/admin/user/ADMIN_AKASH",
+    "/workshop/api/v2/mechanic",
+    "/workshop/api/v2/admin/mechanic/mechanic_report",
+    "/community/api/v2/admin/post"
+  ],
+  "accessible": [],
+  "blocked": [],
+  "severity": "LOW"
+}

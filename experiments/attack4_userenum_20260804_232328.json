@@ -1,0 +1,9 @@
+{
+  "attack": "User Enumeration",
+  "owasp": "API1:2023",
+  "timestamp": "2026-08-04T23:23:28.883045",
+  "ids_probed": 30,
+  "valid_ids_found": [],
+  "not_found_count": 30,
+  "severity": "HIGH"
+}

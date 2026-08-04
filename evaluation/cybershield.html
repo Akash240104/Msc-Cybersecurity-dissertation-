@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CyberShield SOC Platform</title>
+  <style>
+
+    /* ─────────────────────────────
+       RESET — removes browser defaults
+    ───────────────────────────────── */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ─────────────────────────────
+       BASE — dark background, light text
+    ───────────────────────────────── */
+    body {
+      background: #020810;
+      color: #c8e0f0;
+      font-family: Arial, sans-serif;
+    }
+
+    /* ─────────────────────────────
+       HEADER
+    ───────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: #040f1e;
+      padding: 0 20px;
+      height: 64px;
+      border-bottom: 1px solid #0d2040;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      background: #00d4ff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .site-title {
+      color: #00d4ff;
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .site-sub {
+      color: #4a7090;
+      font-size: 10px;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    .header-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #00ff88;
+      border-radius: 50%;
+      margin-right: 6px;
+      animation: blink 1s infinite;
+    }
+
+    .status-text {
+      color: #00ff88;
+      font-size: 12px;
+      font-family: monospace;
+      letter-spacing: 1px;
+    }
+
+    .clock {
+      color: #4a7090;
+      font-family: monospace;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    /* ─────────────────────────────
+       ANIMATIONS
+    ───────────────────────────────── */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(0,212,255,0.3); }
+      50%       { box-shadow: 0 0 25px rgba(0,212,255,0.7); }
+    }
+
+    /* ─────────────────────────────
+       NAV TABS
+    ───────────────────────────────── */
+    nav {
+      display: flex;
+      background: #040f1e;
+      border-bottom: 1px solid #0d2040;
+      padding: 0 20px;
+    }
+
+    .tab {
+      padding: 14px 24px;
+      color: #4a7090;
+      cursor: pointer;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .tab:hover { color: #c8e0f0; }
+
+    .tab.active {
+      color: #00d4ff;
+      border-bottom: 2px solid #00d4ff;
+    }
+
+    .tab-badge {
+      position: absolute;
+      top: 8px;
+      right: 4px;
+      background: #ff3366;
+      color: white;
+      border-radius: 10px;
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: bold;
+      animation: blink 1s infinite;
+    }
+
+    /* ─────────────────────────────
+       PAGES — only active one shows
+    ───────────────────────────────── */
+    .page {
+      display: none;
+      padding: 20px;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* ─────────────────────────────
+       METRIC CARDS
+    ───────────────────────────────── */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .metric-card {
+      background: #080f1f;
+      border: 1px solid #0d2040;
+      border-radius: 8px;
+      padding: 16px;
+      border-top: 2px solid #00d4ff;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    .metric-card.danger {
+      border-top-color: #ff3366;
+      animation: none;
+    }
+
+    .metric-card.warn {
+      border-top-color: #ffaa00;
+      animation: none;
+    }
+
+    .metric-card.ok {
+      border-top-color: #00ff88;
+      animation: none;
+    }
+
+    .metric-label {
+      font-size: 10px;
+      color: #4a7090;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-family: monospace;
+    }
+
+    .metric-value {
+      font-size: 36px;
+      font-weight: bold;
+      color: #00d4ff;
+      font-family: monospace;
+      line-height: 1;
+    }
+
+    .metric-card.danger .metric-value { color: #ff3366; }
+    .metric-card.warn .metric-value { color: #ffaa00; }
+    .metric-card.ok .metric-value { color: #00ff88; }
+
+    .metric-sub {
+      font-size: 11px;
+      color: #4a7090;
+      margin-top: 6px;
+      font-family: monospace;
+    }
+
+    /* ─────────────────────────────
+       TWO COLUMN GRID
+    ───────────────────────────────── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    /* ─────────────────────────────
+       PANEL — reusable card
+    ───────────────────────────────── */
+    .panel {
+      background: #080f1f;
+      border: 1px solid #0d2040;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #0d2040;
+      background: rgba(0,212,255,0.03);
+    }
+
+    .panel-title {
+      font-family: monospace;
+      font-size: 11px;
+      color: #00d4ff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .panel-badge {
+      font-family: monospace;
+      font-size: 10px;
+      color: #4a7090;
+      background: #020810;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #0d2040;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    /* ─────────────────────────────
+       ALERT FEED
+    ───────────────────────────────── */
+    .alert-feed {
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .alert-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #0d2040;
+      animation: slide-in 0.3s ease;
+    }
+
+    .alert-item:hover {
+      background: rgba(0,212,255,0.03);
+    }
+
+    .alert-sev {
+      width: 64px;
+      padding: 2px 0;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 10px;
+      font-weight: bold;
+      text-align: center;
+      flex-shrink: 0;
+      letter-spacing: 1px;
+    }
+
+    .sev-critical {
+      background: rgba(255,0,68,0.2);
+      color: #ff0044;
+      border: 1px solid #ff0044;
+    }
+
+    .sev-high {
+      background: rgba(255,51,102,0.15);
+      color: #ff6688;
+      border: 1px solid #ff3366;
+    }
+
+    .sev-medium {
+      background: rgba(255,170,0,0.15);
+      color: #ffaa00;
+      border: 1px solid #ffaa00;
+    }
+
+    .alert-content { flex: 1; }
+
+    .alert-title {
+      font-family: monospace;
+      font-size: 12px;
+      color: #c8e0f0;
+      margin-bottom: 3px;
+    }
+
+    .alert-meta {
+      font-size: 11px;
+      color: #4a7090;
+      font-family: monospace;
+    }
+
+    .alert-time {
+      font-family: monospace;
+      font-size: 10px;
+      color: #4a7090;
+      flex-shrink: 0;
+    }
+
+    /* ─────────────────────────────
+       DETECTION TABLE
+    ───────────────────────────────── */
+    .det-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .det-table th {
+      font-family: monospace;
+      font-size: 10px;
+      color: #4a7090;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid #0d2040;
+    }
+
+    .det-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(13,32,64,0.5);
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .det-table tr:hover td {
+      background: rgba(0,212,255,0.03);
+    }
+
+    .sev-badge {
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 10px;
+      border: 1px solid;
+    }
+
+    /* ─────────────────────────────
+       AI TRIAGE PANEL
+    ───────────────────────────────── */
+    .triage-box {
+      background: #020810;
+      border: 1px solid #0d2040;
+      border-radius: 6px;
+      padding: 14px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .triage-comment {
+      color: #4a7090;
+      font-size: 10px;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .triage-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 6px;
+      align-items: center;
+    }
+
+    .triage-key {
+      color: #00d4ff;
+      min-width: 130px;
+    }
+
+    .triage-val { color: #c8e0f0; }
+    .triage-val.critical { color: #ff0044; }
+    .triage-val.high { color: #ff6688; }
+    .triage-val.warn { color: #ffaa00; }
+    .triage-val.ok { color: #00ff88; }
+
+    /* ─────────────────────────────
+       LIVE COUNTER
+    ───────────────────────────────── */
+    .live-counter {
+      text-align: center;
+      padding: 20px;
+      font-family: monospace;
+    }
+
+    .counter-number {
+      font-size: 64px;
+      font-weight: bold;
+      color: #ff3366;
+      line-height: 1;
+    }
+
+    .counter-label {
+      font-size: 11px;
+      color: #4a7090;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+
+    /* ─────────────────────────────
+       EVALUATION PAGE
+    ───────────────────────────────── */
+    .eval-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .eval-card {
+      background: #080f1f;
+      border: 1px solid #0d2040;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .eval-card-head {
+      padding: 14px 20px;
+      border-bottom: 1px solid #0d2040;
+      background: rgba(0,212,255,0.04);
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: bold;
+      color: #c8e0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .eval-card-body { padding: 20px; }
+
+    .question-label {
+      font-size: 13px;
+      color: #c8e0f0;
+      margin-bottom: 10px;
+    }
+
+    .question-group { margin-bottom: 20px; }
+
+    .choices {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .choice {
+      padding: 8px 16px;
+      background: #020810;
+      border: 1px solid #0d2040;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #4a7090;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .choice:hover {
+      border-color: #00d4ff;
+      color: #00d4ff;
+    }
+
+    .choice.selected {
+      background: rgba(0,212,255,0.1);
+      border-color: #00d4ff;
+      color: #00d4ff;
+    }
+
+    .rating-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .rating-btn {
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #020810;
+      border: 1px solid #0d2040;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+      color: #4a7090;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .rating-btn:hover, .rating-btn.selected {
+      background: rgba(0,212,255,0.1);
+      border-color: #00d4ff;
+      color: #00d4ff;
+    }
+
+    .text-input {
+      width: 100%;
+      background: #020810;
+      border: 1px solid #0d2040;
+      border-radius: 4px;
+      padding: 10px 12px;
+      color: #c8e0f0;
+      font-family: monospace;
+      font-size: 12px;
+      resize: vertical;
+      min-height: 60px;
+      outline: none;
+    }
+
+    .text-input:focus { border-color: #00d4ff; }
+
+    .name-input {
+      width: 100%;
+      background: #020810;
+      border: 1px solid #0d2040;
+      border-radius: 4px;
+      padding: 10px 12px;
+      color: #c8e0f0;
+      font-family: monospace;
+      font-size: 13px;
+      outline: none;
+      margin-bottom: 14px;
+    }
+
+    .name-input:focus { border-color: #00d4ff; }
+
+    .btn-primary {
+      background: #00d4ff;
+      color: #000;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #00aacc;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #00d4ff;
+      border: 1px solid #00d4ff;
+      padding: 12px 28px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-left: 10px;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0,212,255,0.1);
+    }
+
+    .timer {
+      font-family: monospace;
+      font-size: 28px;
+      color: #ffaa00;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .ai-reveal-box {
+      background: rgba(0,212,255,0.05);
+      border: 1px solid #00d4ff;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .ai-reveal-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #00d4ff;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .ai-dot {
+      width: 22px;
+      height: 22px;
+      background: #00d4ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .progress-bar-wrap {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      justify-content: center;
+    }
+
+    .prog-dot {
+      width: 36px;
+      height: 4px;
+      background: #0d2040;
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+
+    .prog-dot.done { background: #00ff88; }
+    .prog-dot.active { background: #00d4ff; }
+
+    .hidden { display: none !important; }
+
+    /* ─────────────────────────────
+       RESULTS PAGE
+    ───────────────────────────────── */
+    .result-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .result-stat {
+      background: #080f1f;
+      border: 1px solid #0d2040;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .result-val {
+      font-family: monospace;
+      font-size: 48px;
+      font-weight: bold;
+      color: #00ff88;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .result-label {
+      font-family: monospace;
+      font-size: 10px;
+      color: #4a7090;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .bar-chart { padding: 8px 0; }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .bar-label {
+      font-family: monospace;
+      font-size: 11px;
+      color: #4a7090;
+      width: 100px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 22px;
+      background: #020810;
+      border: 1px solid #0d2040;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      padding-right: 6px;
+      justify-content: flex-end;
+      font-family: monospace;
+      font-size: 10px;
+      color: rgba(0,0,0,0.8);
+      font-weight: bold;
+      transition: width 1s ease;
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     HEADER
+══════════════════════════════════ -->
+<header>
+  <div class="logo">CS</div>
+  <div>
+    <div class="site-title">CyberShield</div>
+    <div class="site-sub">SOC SIMULATION PLATFORM // UNIVERSITY OF GLASGOW // COMPSCI5086P</div>
+  </div>
+  <div class="header-right">
+    <div class="status-text">
+      <span class="status-dot"></span>LIVE
+    </div>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════
+     NAV TABS
+══════════════════════════════════ -->
+<nav>
+  <div class="tab active" onclick="showPage('dashboard', this)">
+    Live Dashboard
+    <span class="tab-badge" id="badge-alerts">0</span>
+  </div>
+  <div class="tab" onclick="showPage('detection', this)">Detection Results</div>
+  <div class="tab" onclick="showPage('triage', this)">AI Triage</div>
+  <div class="tab" onclick="showPage('evaluation', this)">Evaluation Study</div>
+  <div class="tab" onclick="showPage('results', this)">Results</div>
+</nav>
+
+<!-- ══════════════════════════════
+     PAGE 1: LIVE DASHBOARD
+══════════════════════════════════ -->
+<div class="page active" id="page-dashboard">
+
+  <!-- Metrics Row -->
+  <div class="metrics">
+    <div class="metric-card danger">
+      <div class="metric-label">Total Attacks</div>
+      <div class="metric-value" id="m-attacks">0</div>
+      <div class="metric-sub">simulated today</div>
+    </div>
+    <div class="metric-card warn">
+      <div class="metric-label">Active Alerts</div>
+      <div class="metric-value" id="m-alerts">0</div>
+      <div class="metric-sub">awaiting triage</div>
+    </div>
+    <div class="metric-card ok">
+      <div class="metric-label">Detection Rate</div>
+      <div class="metric-value" id="m-rate">0%</div>
+      <div class="metric-sub">SPL + MLTK</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">AI Triaged</div>
+      <div class="metric-value" id="m-triaged">0</div>
+      <div class="metric-sub">auto-classified</div>
+    </div>
+  </div>
+
+  <!-- Alert Feed + Live Counter -->
+  <div class="grid-2">
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Live Alert Feed</div>
+        <div class="panel-badge" id="feed-label">0 ALERTS</div>
+      </div>
+      <div class="alert-feed" id="alert-feed"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Attack Counter</div>
+        <div class="panel-badge">REAL TIME</div>
+      </div>
+      <div class="panel-body">
+        <div class="live-counter">
+          <div class="counter-number" id="live-count">0</div>
+          <div class="counter-label">Requests Detected</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px">
+            <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:4px">BOLA</div>
+            <div style="font-family:monospace;font-size:20px;color:#ff6688" id="c-bola">370</div>
+          </div>
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px">
+            <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:4px">BRUTE FORCE</div>
+            <div style="font-family:monospace;font-size:20px;color:#ff0044" id="c-brute">256</div>
+          </div>
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px">
+            <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:4px">RATE LIMIT</div>
+            <div style="font-family:monospace;font-size:20px;color:#ffaa00" id="c-rate">200</div>
+          </div>
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px">
+            <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:4px">USER ENUM</div>
+            <div style="font-family:monospace;font-size:20px;color:#00d4ff" id="c-enum">105</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+  <!-- HACKER TERMINAL -->
+  <div class="panel" style="margin-top:15px">
+    <div class="panel-header">
+      <div class="panel-title">Live Attack Terminal</div>
+      <div class="panel-badge">ACTIVE</div>
+    </div>
+    <div style="background:#000">
+      <div style="background:#111;padding:8px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #222">
+        <div style="width:10px;height:10px;border-radius:50%;background:#ff5f56"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:#ffbd2e"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:#27c93f"></div>
+        <span style="font-family:monospace;font-size:11px;color:#555;margin-left:8px">akash@glasgow-soc:~$</span>
+      </div>
+      <div id="hacker-terminal" style="padding:14px 16px;font-family:monospace;font-size:12px;line-height:1.9;max-height:220px;overflow:hidden"></div>
+    </div>
+  </div>
+
+<!-- ══════════════════════════════
+     PAGE 2: DETECTION RESULTS
+══════════════════════════════════ -->
+<div class="page hidden" id="page-detection">
+
+  <div class="panel" style="margin-bottom:15px">
+    <div class="panel-header">
+      <div class="panel-title">OWASP API Top 10 — SPL Detection Results</div>
+      <div class="panel-badge">SPLUNK ENTERPRISE 9.3</div>
+    </div>
+    <div class="panel-body" style="padding:0">
+      <table class="det-table">
+        <thead>
+          <tr>
+            <th>Attack</th>
+            <th>OWASP</th>
+            <th>SPL Rule</th>
+            <th>Detected</th>
+            <th>Severity</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="detection-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Detection Count by Attack</div>
+        <div class="panel-badge">BAR CHART</div>
+      </div>
+      <div class="panel-body">
+        <div class="bar-chart" id="bar-chart"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">MLTK Anomaly Detection</div>
+        <div class="panel-badge">ML RESULT</div>
+      </div>
+      <div class="panel-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+          <div style="background:#020810;border:1px solid #0d2040;border-radius:6px;padding:14px;text-align:center">
+            <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:6px">OUTLIERS FOUND</div>
+            <div style="font-family:monospace;font-size:36px;color:#00d4ff">1</div>
+          </div>
+          <div style="background:#020810;border:1px solid #0d2040;border-radius:6px;padding:14px;text-align:center">
+            <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:6px">ALGORITHM</div>
+            <div style="font-family:monospace;font-size:11px;color:#00ff88;margin-top:6px">Median Absolute<br>Deviation</div>
+          </div>
+        </div>
+        <div style="background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px;font-family:monospace;font-size:11px;color:#4a7090">
+          <div style="color:#00d4ff;margin-bottom:6px">// KEY FINDING</div>
+          SPL rules detect attacks immediately with any dataset size. MLTK requires historical baseline — detected spike anomaly after sufficient traffic volume. Both approaches complement each other.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 3: AI TRIAGE
+══════════════════════════════════ -->
+<div class="page hidden" id="page-triage">
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">AI Triage Output</div>
+        <div class="panel-badge">LLAMA 3.2 — OLLAMA</div>
+      </div>
+      <div class="panel-body">
+        <div class="triage-box" id="triage-box">
+          <div class="triage-comment">// AI SOC ANALYST — ALERT TRIAGE</div>
+          <div class="triage-row">
+            <span class="triage-key">SEVERITY:</span>
+            <span class="triage-val high" id="t-sev">HIGH</span>
+          </div>
+          <div class="triage-row">
+            <span class="triage-key">ATTACK_TYPE:</span>
+            <span class="triage-val" id="t-type">BOLA — API1:2023</span>
+          </div>
+          <div class="triage-row">
+            <span class="triage-key">CONFIDENCE:</span>
+            <span class="triage-val ok" id="t-conf">80%</span>
+          </div>
+          <div class="triage-row">
+            <span class="triage-key">ACTION:</span>
+            <span class="triage-val" id="t-action">Block IP · Escalate to Tier 2</span>
+          </div>
+          <div class="triage-row">
+            <span class="triage-key">ESCALATE:</span>
+            <span class="triage-val warn" id="t-esc">YES → Tier 2</span>
+          </div>
+          <div class="triage-row">
+            <span class="triage-key">FALSE_POS:</span>
+            <span class="triage-val" id="t-fp">Medium</span>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;font-family:monospace;font-size:11px;color:#4a7090;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px" id="t-reasoning">
+          Reasoning loads here...
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">How LLM Triage Works</div>
+        <div class="panel-badge">ARCHITECTURE</div>
+      </div>
+      <div class="panel-body">
+        <div style="font-family:monospace;font-size:12px;line-height:2;color:#4a7090">
+          <div style="color:#00ff88">Step 1: Splunk fires alert</div>
+          <div style="padding-left:16px;color:#4a7090">└─ SPL rule threshold exceeded</div>
+          <div style="color:#00d4ff">Step 2: Python script triggered</div>
+          <div style="padding-left:16px;color:#4a7090">└─ llm_triage.py reads alert data</div>
+          <div style="color:#00ff88">Step 3: Prompt built automatically</div>
+          <div style="padding-left:16px;color:#4a7090">└─ IP, endpoint, count, attack type</div>
+          <div style="color:#00d4ff">Step 4: Sent to Llama 3.2 (local)</div>
+          <div style="padding-left:16px;color:#4a7090">└─ Ollama running on localhost</div>
+          <div style="color:#00ff88">Step 5: AI returns triage analysis</div>
+          <div style="padding-left:16px;color:#4a7090">└─ Severity, action, confidence</div>
+          <div style="color:#ffaa00">Step 6: Saved to experiments/</div>
+          <div style="padding-left:16px;color:#4a7090">└─ Audit trail maintained</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 4: EVALUATION
+══════════════════════════════════ -->
+<div class="page hidden" id="page-evaluation">
+<div class="eval-wrap">
+
+  <!-- STEP 0: Welcome -->
+  <div id="eval-0">
+    <div class="eval-card">
+      <div class="eval-card-head">
+        SOC Analyst Evaluation Study
+        <span style="font-size:10px;color:#4a7090;letter-spacing:1px">~15 MINUTES</span>
+      </div>
+      <div class="eval-card-body">
+        <p style="font-size:13px;color:#c8e0f0;line-height:1.8;margin-bottom:16px">
+          This study evaluates whether AI-assisted alert triage helps security analysts classify threats <strong style="color:#00d4ff">faster and more accurately</strong> than manual analysis alone.
+          <br><br>
+          You will analyse <strong style="color:#00d4ff">4 real security alerts</strong> from a simulated SOC. For each alert you will:
+          <br><br>
+          <span style="color:#00ff88;font-family:monospace">Phase A:</span> Analyse raw alert data and make your own assessment<br>
+          <span style="color:#00ff88;font-family:monospace">Phase B:</span> See the AI triage output and rate its usefulness
+        </p>
+        <div style="background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px;font-family:monospace;font-size:11px;color:#4a7090;margin-bottom:20px">
+          ⚠️ No prior Splunk knowledge required — all alerts in plain format<br>
+          🔒 Responses are anonymous — used for academic research only<br>
+          ⏱️ Your response time is recorded automatically
+        </div>
+        <input class="name-input" id="participant-name" placeholder="Enter name or ID (e.g. Participant_1)">
+        <button class="btn-primary" onclick="startEval()">BEGIN EVALUATION →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1-4: Alerts -->
+  <div id="eval-alerts" class="hidden">
+    <div class="progress-bar-wrap" id="progress-bar"></div>
+    <div id="alert-card-area"></div>
+    <div style="text-align:right;margin-top:16px">
+      <button class="btn-primary" id="next-btn" onclick="nextAlert()">NEXT →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: Overall Questions -->
+  <div id="eval-overall" class="hidden">
+    <div class="eval-card">
+      <div class="eval-card-head">Overall Feedback</div>
+      <div class="eval-card-body">
+
+        <div class="question-group">
+          <div class="question-label">How useful was AI triage overall? (1 = not useful, 10 = very useful)</div>
+          <div class="rating-row" id="r-overall">
+            <div class="rating-btn" onclick="pickRating(this,'r-overall')">1</div>
+            <div class="rating-btn" onclick="pickRating(this,'r-overall')">2</div>
+            <div class="rating-btn" onclick="pickRating(this,'r-overall')">3</div>
+            <div class="rating-btn" onclick="pickRating(this,'r-overall')">4</div>
+            <div class="rating-btn" onclick="pickRating(this,'r-overall')">5</div>
+            <div class="rating-btn" onclick="pickRating(this,'r-overall')">6</div>
+            <div class="rating-btn" onclick="pickRating(this,'r-overall')">7</div>
+            <div class="rating-btn" onclick="pickRating(this,'r-overall')">8</div>
+            <div class="rating-btn" onclick="pickRating(this,'r-overall')">9</div>
+            <div class="rating-btn" onclick="pickRating(this,'r-overall')">10</div>
+          </div>
+        </div>
+
+        <div class="question-group">
+          <div class="question-label">Did AI triage make you faster?</div>
+          <div class="choices" id="r-speed">
+            <div class="choice" onclick="pickChoice(this,'r-speed')">Yes — much faster</div>
+            <div class="choice" onclick="pickChoice(this,'r-speed')">Yes — slightly faster</div>
+            <div class="choice" onclick="pickChoice(this,'r-speed')">No difference</div>
+            <div class="choice" onclick="pickChoice(this,'r-speed')">No — slowed me down</div>
+          </div>
+        </div>
+
+        <div class="question-group">
+          <div class="question-label">Would you trust AI triage in a real SOC?</div>
+          <div class="choices" id="r-trust">
+            <div class="choice" onclick="pickChoice(this,'r-trust')">Yes — fully</div>
+            <div class="choice" onclick="pickChoice(this,'r-trust')">Yes — with human oversight</div>
+            <div class="choice" onclick="pickChoice(this,'r-trust')">Maybe — needs improvement</div>
+            <div class="choice" onclick="pickChoice(this,'r-trust')">No</div>
+          </div>
+        </div>
+
+        <div class="question-group">
+          <div class="question-label">Your cybersecurity experience level?</div>
+          <div class="choices" id="r-exp">
+            <div class="choice" onclick="pickChoice(this,'r-exp')">Beginner</div>
+            <div class="choice" onclick="pickChoice(this,'r-exp')">MSc / Intermediate</div>
+            <div class="choice" onclick="pickChoice(this,'r-exp')">Advanced</div>
+            <div class="choice" onclick="pickChoice(this,'r-exp')">Professional SOC</div>
+          </div>
+        </div>
+
+        <div class="question-group">
+          <div class="question-label">What would improve this system?</div>
+          <textarea class="text-input" id="r-improve" placeholder="Your suggestions..."></textarea>
+        </div>
+
+        <div class="question-group">
+          <div class="question-label">Any other feedback?</div>
+          <textarea class="text-input" id="r-feedback" placeholder="Additional comments..."></textarea>
+        </div>
+
+        <button class="btn-primary" onclick="submitEval()">SUBMIT ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 6: Thank you -->
+  <div id="eval-done" class="hidden">
+    <div class="eval-card" style="border-color:#00ff88">
+      <div class="eval-card-body" style="text-align:center;padding:40px">
+        <div style="font-size:60px;margin-bottom:16px">✓</div>
+        <div style="font-family:monospace;font-size:24px;color:#00ff88;letter-spacing:2px;margin-bottom:12px">EVALUATION COMPLETE</div>
+        <p style="color:#4a7090;font-size:13px;margin-bottom:20px">Thank you. Your responses have been saved.</p>
+        <div style="background:#020810;border:1px solid #0d2040;border-radius:6px;padding:16px;text-align:left;font-family:monospace;font-size:11px;color:#4a7090">
+          Research: AI-Assisted SOC Alert Triage Evaluation<br>
+          Institution: University of Glasgow<br>
+          Programme: MSc Cybersecurity — COMPSCI5086P<br>
+          Supervisor: Professor Jeremy Singer
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 5: RESULTS
+══════════════════════════════════ -->
+<div class="page hidden" id="page-results">
+
+  <div class="result-stats">
+    <div class="result-stat">
+      <div class="result-val" id="r-count">0</div>
+      <div class="result-label">Participants</div>
+    </div>
+    <div class="result-stat">
+      <div class="result-val" id="r-avg" style="color:#00d4ff">—</div>
+      <div class="result-label">Avg AI Rating /10</div>
+    </div>
+    <div class="result-stat">
+      <div class="result-val" id="r-faster" style="color:#ffaa00">—</div>
+      <div class="result-label">Said AI Was Faster</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">AI Usefulness Ratings</div>
+        <div class="panel-badge">USER STUDY DATA</div>
+      </div>
+      <div class="panel-body">
+        <div id="ratings-chart" style="font-family:monospace;font-size:12px;color:#4a7090">
+          No responses yet. Share evaluation page with classmates.
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Response Table</div>
+        <div class="panel-badge" id="resp-count">0 RESPONSES</div>
+      </div>
+      <div class="panel-body" style="padding:0">
+        <table class="det-table" id="resp-table">
+          <thead>
+            <tr>
+              <th>Participant</th>
+              <th>AI Rating</th>
+              <th>Speed</th>
+              <th>Trust AI</th>
+              <th>Experience</th>
+            </tr>
+          </thead>
+          <tbody id="resp-body">
+            <tr><td colspan="5" style="text-align:center;color:#4a7090;padding:20px">No data yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:15px">
+    <div class="panel-header">
+      <div class="panel-title">Export Data</div>
+    </div>
+    <div class="panel-body">
+      <button class="btn-primary" onclick="exportCSV()">EXPORT CSV</button>
+      <button class="btn-secondary" onclick="exportJSON()">EXPORT JSON</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════ -->
+<script>
+
+// ─────────────────────────────────────
+// DATA — your real dissertation results
+// ─────────────────────────────────────
+const ATTACKS = [
+  { name:'BOLA',           owasp:'API1:2023', count:370, sev:'HIGH',     sevClass:'sev-high',     spl:'index=api_logs "community/posts/recent" | stats count | where count > 5' },
+  { name:'Brute Force',    owasp:'API2:2023', count:256, sev:'CRITICAL', sevClass:'sev-critical', spl:'index=api_logs "auth/login" | stats count | where count > 5' },
+  { name:'Rate Limiting',  owasp:'API4:2023', count:200, sev:'HIGH',     sevClass:'sev-high',     spl:'index=api_logs "dashboard" | bucket span=1m | stats count | where count > 10' },
+  { name:'User Enum',      owasp:'API1:2023', count:105, sev:'HIGH',     sevClass:'sev-high',     spl:'index=api_logs "user/" "404" | stats dc(user_id) | where unique > 5' },
+  { name:'Obj Property',   owasp:'API3:2023', count:48,  sev:'MEDIUM',   sevClass:'sev-medium',   spl:'index=api_logs "dashboard" | rex "video_url|credit" | stats count' },
+  { name:'Inventory',      owasp:'API9:2023', count:12,  sev:'MEDIUM',   sevClass:'sev-medium',   spl:'index=api_logs "/api/v1/" | stats count | where count > 0' },
+];
+
+const ALERT_TEMPLATES = [
+  { sev:'CRITICAL', cls:'sev-critical', title:'Brute force — 256 login attempts', meta:'172.18.0.1 → /identity/api/auth/login' },
+  { sev:'HIGH',     cls:'sev-high',     title:'BOLA attack — data exposed',       meta:'172.18.0.1 → /community/posts/recent' },
+  { sev:'HIGH',     cls:'sev-high',     title:'Rate limiting violation',           meta:'172.18.0.1 → 100 req/min on dashboard' },
+  { sev:'HIGH',     cls:'sev-high',     title:'User enumeration detected',         meta:'172.18.0.1 → /user/1-30/videos probed' },
+  { sev:'MEDIUM',   cls:'sev-medium',   title:'Deprecated API v1 accessed',       meta:'172.18.0.1 → /api/v1/ endpoints' },
+  { sev:'MEDIUM',   cls:'sev-medium',   title:'Sensitive field exposure',         meta:'credit_balance, video_url returned' },
+];
+
+const TRIAGE_DATA = [
+  { sev:'CRITICAL', sevC:'critical', type:'Brute Force — API2:2023',    conf:'92%', action:'Block IP · Reset credentials',     esc:'YES → Tier 2', fp:'Low',    reasoning:'256 POST requests to login endpoint with sequential password variations. No account lockout detected. High confidence brute force attack in progress.' },
+  { sev:'HIGH',     sevC:'high',     type:'BOLA — API1:2023',           conf:'80%', action:'Block IP · Review exposed accounts', esc:'YES → Tier 2', fp:'Medium', reasoning:'370 requests to community endpoint returning other users data. Single authenticated token accessing multiple user objects. Classic BOLA pattern.' },
+  { sev:'HIGH',     sevC:'high',     type:'Rate Limiting — API4:2023',  conf:'85%', action:'Implement rate limit · Monitor',    esc:'YES → Tier 2', fp:'Low',    reasoning:'100 requests per minute exceeds normal usage by 20x. No throttling enforcement detected. Off-hours automated tool signature.' },
+  { sev:'HIGH',     sevC:'high',     type:'User Enum — API1:2023',      conf:'75%', action:'Monitor IP · Log enumeration',      esc:'YES',          fp:'Low',    reasoning:'Sequential probing of 30 user IDs indicates reconnaissance. Precursor to targeted BOLA attack. Attacker mapping valid accounts.' },
+];
+
+const EVAL_ALERTS = [
+  {
+    title: 'High Volume Login Failures',
+    data: {
+      'Source IP':       '172.18.0.1',
+      'Endpoint':        '/identity/api/auth/login',
+      'Request Count':   '256 POST requests in 3 minutes',
+      'Response Code':   '401 Unauthorised (repeated)',
+      'Pattern':         'Sequential wrong passwords',
+      'Account Lockout': 'None detected',
+      'Time':            '03:55 AM',
+    },
+    ai: TRIAGE_DATA[0],
+  },
+  {
+    title: 'Unusual Community API Access',
+    data: {
+      'Source IP':      '172.18.0.1',
+      'Endpoint':       '/community/api/v2/community/posts/recent',
+      'Request Count':  '370 requests in 4 minutes',
+      'Response Code':  '200 OK — data returned each time',
+      'Data Exposed':   '3 other users emails and vehicle IDs',
+      'Tool Used':      'curl/8.5.0 (automated)',
+      'Time':           '03:52 AM',
+    },
+    ai: TRIAGE_DATA[1],
+  },
+  {
+    title: 'Excessive Dashboard Requests',
+    data: {
+      'Source IP':    '172.18.0.1',
+      'Endpoint':     '/identity/api/v2/user/dashboard',
+      'Request Count':'100 requests per minute',
+      'Response Code':'200 OK — no throttling',
+      'Normal Rate':  '2-5 requests per session',
+      'Duration':     '2 minutes sustained',
+      'Time':         '04:00 AM',
+    },
+    ai: TRIAGE_DATA[2],
+  },
+  {
+    title: 'Sequential User ID Probing',
+    data: {
+      'Source IP':    '172.18.0.1',
+      'Endpoint':     '/identity/api/v2/user/[1-30]/videos',
+      'Request Count':'30 sequential requests',
+      'Response Code':'404 Not Found (all)',
+      'Pattern':      'Incrementing IDs 1 through 30',
+      'Purpose':      'Mapping valid user accounts',
+      'Time':         '04:05 AM',
+    },
+    ai: TRIAGE_DATA[3],
+  },
+];
+
+// ─────────────────────────────────────
+// STATE
+// ─────────────────────────────────────
+let alertCount = 0;
+let totalRequests = 0;
+let triageIndex = 0;
+let evalStep = 0;
+let evalParticipant = '';
+let evalResponses = [];
+let currentResponse = {};
+let phaseAStart = 0;
+let timerInterval = null;
+let allResponses = [];
+
+try {
+  allResponses = JSON.parse(localStorage.getItem('cs_eval') || '[]');
+} catch(e) {}
+
+// ─────────────────────────────────────
+// NAV
+// ─────────────────────────────────────
+function showPage(name, tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.remove('hidden');
+  document.getElementById('page-' + name).classList.add('active');
+  if (tab) tab.classList.add('active');
+  if (name === 'results') updateResults();
+  if (name === 'detection') buildDetection();
+}
+
+// ─────────────────────────────────────
+// CLOCK
+// ─────────────────────────────────────
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString('en-GB', {hour12:false});
+}
+
+// ─────────────────────────────────────
+// NUMBER ANIMATION
+// Counts from 0 to target over duration
+// ─────────────────────────────────────
+function animateNum(id, target, duration, suffix) {
+  const el = document.getElementById(id);
+  const start = Date.now();
+  const tick = () => {
+    const p = Math.min((Date.now()-start)/duration, 1);
+    // easeOut = starts fast, slows at end
+    const eased = 1 - Math.pow(1-p, 3);
+    const val = Math.floor(target * eased);
+    el.textContent = val + (suffix || '');
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  tick();
+}
+
+// ─────────────────────────────────────
+// ALERT FEED — adds alerts every few seconds
+// ─────────────────────────────────────
+function addAlert() {
+  const feed = document.getElementById('alert-feed');
+  const t = ALERT_TEMPLATES[alertCount % ALERT_TEMPLATES.length];
+  const time = new Date().toLocaleTimeString('en-GB', {hour12:false});
+
+  // Create alert element
+  const item = document.createElement('div');
+  item.className = 'alert-item';
+  item.innerHTML = `
+    <span class="alert-sev ${t.cls}">${t.sev}</span>
+    <div class="alert-content">
+      <div class="alert-title">${t.title}</div>
+      <div class="alert-meta">${t.meta}</div>
+    </div>
+    <span class="alert-time">${time}</span>
+  `;
+
+  // Add to TOP of feed
+  feed.insertBefore(item, feed.firstChild);
+  alertCount++;
+
+  // Update counts
+  document.getElementById('feed-label').textContent = alertCount + ' ALERTS';
+  document.getElementById('badge-alerts').textContent = alertCount;
+  document.getElementById('m-alerts').textContent = alertCount;
+
+  // Remove old alerts if too many
+  if (feed.children.length > 15) {
+    feed.removeChild(feed.lastChild);
+  }
+}
+
+// ─────────────────────────────────────
+// LIVE COUNTER — ticks up total requests
+// ─────────────────────────────────────
+function tickRequests() {
+  totalRequests += Math.floor(Math.random() * 5) + 1;
+  document.getElementById('live-count').textContent = totalRequests.toLocaleString();
+  document.getElementById('m-attacks').textContent = totalRequests;
+}
+
+// ─────────────────────────────────────
+// TRIAGE ROTATION — cycles through attacks
+// ─────────────────────────────────────
+function rotateTriage() {
+  const t = TRIAGE_DATA[triageIndex % TRIAGE_DATA.length];
+  document.getElementById('t-sev').textContent = t.sev;
+  document.getElementById('t-sev').className = 'triage-val ' + t.sevC;
+  document.getElementById('t-type').textContent = t.type;
+  document.getElementById('t-conf').textContent = t.conf;
+  document.getElementById('t-action').textContent = t.action;
+  document.getElementById('t-esc').textContent = t.esc;
+  document.getElementById('t-fp').textContent = t.fp;
+  document.getElementById('t-reasoning').textContent = t.reasoning;
+  triageIndex++;
+}
+
+// ─────────────────────────────────────
+// DETECTION TABLE
+// ─────────────────────────────────────
+function buildDetection() {
+  const tbody = document.getElementById('detection-table-body');
+  if (tbody.children.length > 0) return; // already built
+
+  ATTACKS.forEach(a => {
+    const tr = document.createElement('tr');
+    const sevStyle = a.sev === 'CRITICAL'
+      ? 'background:rgba(255,0,68,0.2);color:#ff0044;border:1px solid #ff0044'
+      : a.sev === 'HIGH'
+      ? 'background:rgba(255,51,102,0.15);color:#ff6688;border:1px solid #ff3366'
+      : 'background:rgba(255,170,0,0.15);color:#ffaa00;border:1px solid #ffaa00';
+
+    tr.innerHTML = `
+      <td>${a.name}</td>
+      <td style="color:#4a7090">${a.owasp}</td>
+      <td style="font-size:10px;color:#4a7090;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.spl}</td>
+      <td style="color:#00ff88">${a.count}</td>
+      <td><span class="sev-badge" style="${sevStyle};padding:2px 8px;border-radius:3px;font-size:10px">${a.sev}</span></td>
+      <td style="color:#00ff88;font-size:11px">✓ DETECTED</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Build bar chart
+  const chart = document.getElementById('bar-chart');
+  const max = Math.max(...ATTACKS.map(a => a.count));
+  ATTACKS.forEach(a => {
+    const pct = (a.count / max * 100).toFixed(0);
+    const color = a.sev === 'CRITICAL' ? '#ff0044'
+                : a.sev === 'HIGH'     ? '#ff6688'
+                : '#ffaa00';
+    chart.innerHTML += `
+      <div class="bar-row">
+        <div class="bar-label">${a.name}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${pct}%;background:${color}" >${a.count}</div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// ─────────────────────────────────────
+// EVALUATION LOGIC
+// ─────────────────────────────────────
+function startEval() {
+  const name = document.getElementById('participant-name').value.trim();
+  if (!name) { alert('Please enter your name or participant ID'); return; }
+  evalParticipant = name;
+  evalStep = 0;
+  currentResponse = { participant: name, timestamp: new Date().toISOString(), alerts: {} };
+
+  document.getElementById('eval-0').classList.add('hidden');
+  document.getElementById('eval-alerts').classList.remove('hidden');
+  buildProgress();
+  showAlert(0);
+}
+
+function buildProgress() {
+  const bar = document.getElementById('progress-bar');
+  bar.innerHTML = '';
+  EVAL_ALERTS.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'prog-dot' + (i < evalStep ? ' done' : i === evalStep ? ' active' : '');
+    bar.appendChild(dot);
+  });
+}
+
+function showAlert(idx) {
+  buildProgress();
+  const a = EVAL_ALERTS[idx];
+  phaseAStart = Date.now();
+
+  // Build alert card HTML
+  const dataRows = Object.entries(a.data).map(([k,v]) =>
+    `<div style="display:flex;gap:16px;margin-bottom:8px;font-family:monospace;font-size:12px">
+       <span style="color:#4a7090;min-width:140px">${k}:</span>
+       <span style="color:#c8e0f0">${v}</span>
+     </div>`
+  ).join('');
+
+  document.getElementById('alert-card-area').innerHTML = `
+    <div class="eval-card">
+      <div class="eval-card-head">
+        Alert ${idx+1} of ${EVAL_ALERTS.length}: ${a.title}
+        <span style="font-size:10px;color:#ff6688;letter-spacing:1px">PHASE A — YOUR ASSESSMENT</span>
+      </div>
+      <div class="eval-card-body">
+
+        <div style="font-family:monospace;font-size:10px;color:#4a7090;letter-spacing:1px;margin-bottom:8px;text-transform:uppercase">Raw Alert Data</div>
+        <div style="background:#020810;border:1px solid #0d2040;border-radius:6px;padding:14px;margin-bottom:16px">
+          ${dataRows}
+        </div>
+
+        <div class="timer" id="eval-timer">00:00</div>
+        <div style="font-family:monospace;font-size:10px;color:#4a7090;text-align:center;margin-bottom:16px">Time automatically recorded</div>
+
+        <div class="question-group">
+          <div class="question-label">What type of attack is this?</div>
+          <div class="choices" id="qa-type">
+            <div class="choice" onclick="pickChoice(this,'qa-type')">BOLA / Authorisation Issue</div>
+            <div class="choice" onclick="pickChoice(this,'qa-type')">Brute Force / Credential Attack</div>
+            <div class="choice" onclick="pickChoice(this,'qa-type')">Rate Limiting Abuse</div>
+            <div class="choice" onclick="pickChoice(this,'qa-type')">Reconnaissance / Enumeration</div>
+            <div class="choice" onclick="pickChoice(this,'qa-type')">Not sure</div>
+          </div>
+        </div>
+
+        <div class="question-group">
+          <div class="question-label">How severe is this?</div>
+          <div class="choices" id="qa-sev">
+            <div class="choice" onclick="pickChoice(this,'qa-sev')">Low</div>
+            <div class="choice" onclick="pickChoice(this,'qa-sev')">Medium</div>
+            <div class="choice" onclick="pickChoice(this,'qa-sev')">High</div>
+            <div class="choice" onclick="pickChoice(this,'qa-sev')">Critical</div>
+          </div>
+        </div>
+
+        <div class="question-group">
+          <div class="question-label">What action would you take?</div>
+          <div class="choices" id="qa-action">
+            <div class="choice" onclick="pickChoice(this,'qa-action')">Monitor only</div>
+            <div class="choice" onclick="pickChoice(this,'qa-action')">Block source IP</div>
+            <div class="choice" onclick="pickChoice(this,'qa-action')">Escalate to Tier 2</div>
+            <div class="choice" onclick="pickChoice(this,'qa-action')">Ignore — false positive</div>
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:20px">
+          <button class="btn-primary" onclick="revealAI(${idx})">SEE AI ANALYSIS →</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Start timer
+  if (timerInterval) clearInterval(timerInterval);
+  const start = Date.now();
+  timerInterval = setInterval(() => {
+    const secs = Math.floor((Date.now()-start)/1000);
+    const m = String(Math.floor(secs/60)).padStart(2,'0');
+    const s = String(secs%60).padStart(2,'0');
+    const el = document.getElementById('eval-timer');
+    if (el) el.textContent = m + ':' + s;
+  }, 1000);
+}
+
+function revealAI(idx) {
+  clearInterval(timerInterval);
+  const phaseATime = Math.floor((Date.now()-phaseAStart)/1000);
+  const a = EVAL_ALERTS[idx];
+  const ai = a.ai;
+
+  // Save phase A data
+  const typeSel = document.querySelector('#qa-type .selected');
+  const sevSel  = document.querySelector('#qa-sev .selected');
+  const actSel  = document.querySelector('#qa-action .selected');
+
+  currentResponse.alerts['alert_' + (idx+1)] = {
+    phaseA_seconds: phaseATime,
+    attack_guess:   typeSel ? typeSel.textContent : 'Not answered',
+    severity_guess: sevSel  ? sevSel.textContent  : 'Not answered',
+    action_guess:   actSel  ? actSel.textContent  : 'Not answered',
+  };
+
+  // Add AI reveal below current card
+  const area = document.getElementById('alert-card-area');
+  const aiCard = document.createElement('div');
+  aiCard.className = 'eval-card';
+  aiCard.style.borderColor = '#00d4ff';
+  aiCard.style.marginTop = '16px';
+
+  const sevStyle = ai.sevC === 'critical'
+    ? 'color:#ff0044' : ai.sevC === 'high'
+    ? 'color:#ff6688' : 'color:#ffaa00';
+
+  aiCard.innerHTML = `
+    <div class="eval-card-head" style="background:rgba(0,212,255,0.05)">
+      AI Triage Analysis
+      <span style="font-size:10px;color:#00d4ff;letter-spacing:1px">PHASE B — REVIEW AI OUTPUT</span>
+    </div>
+    <div class="eval-card-body">
+
+      <div class="ai-reveal-box">
+        <div class="ai-reveal-title">
+          <div class="ai-dot">AI</div>
+          LLaMA 3.2 — Automated SOC Triage
+        </div>
+        <div class="triage-row"><span class="triage-key">SEVERITY:</span><span class="triage-val" style="${sevStyle}">${ai.sev}</span></div>
+        <div class="triage-row"><span class="triage-key">ATTACK_TYPE:</span><span class="triage-val">${ai.type}</span></div>
+        <div class="triage-row"><span class="triage-key">CONFIDENCE:</span><span class="triage-val ok">${ai.conf}</span></div>
+        <div class="triage-row"><span class="triage-key">ACTION:</span><span class="triage-val">${ai.action}</span></div>
+        <div class="triage-row"><span class="triage-key">ESCALATE:</span><span class="triage-val warn">${ai.esc}</span></div>
+        <div class="triage-row"><span class="triage-key">FALSE_POS:</span><span class="triage-val">${ai.fp}</span></div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #0d2040;font-family:monospace;font-size:11px;color:#4a7090">${ai.reasoning}</div>
+      </div>
+
+      <div class="question-group">
+        <div class="question-label">How helpful was AI triage for this alert? (1-10)</div>
+        <div class="rating-row" id="qb-help-${idx}">
+          ${[1,2,3,4,5,6,7,8,9,10].map(n =>
+            `<div class="rating-btn" onclick="pickRating(this,'qb-help-${idx}')">${n}</div>`
+          ).join('')}
+        </div>
+      </div>
+
+      <div class="question-group">
+        <div class="question-label">Did AI change your assessment?</div>
+        <div class="choices" id="qb-change-${idx}">
+          <div class="choice" onclick="pickChoice(this,'qb-change-${idx}')">Yes — changed severity</div>
+          <div class="choice" onclick="pickChoice(this,'qb-change-${idx}')">Yes — changed action</div>
+          <div class="choice" onclick="pickChoice(this,'qb-change-${idx}')">No — AI confirmed mine</div>
+          <div class="choice" onclick="pickChoice(this,'qb-change-${idx}')">No — I disagree with AI</div>
+        </div>
+      </div>
+
+      <div class="question-group">
+        <div class="question-label">With AI triage, your decision speed was?</div>
+        <div class="choices" id="qb-speed-${idx}">
+          <div class="choice" onclick="pickChoice(this,'qb-speed-${idx}')">Much faster (&gt;50%)</div>
+          <div class="choice" onclick="pickChoice(this,'qb-speed-${idx}')">Somewhat faster (25-50%)</div>
+          <div class="choice" onclick="pickChoice(this,'qb-speed-${idx}')">Slightly faster (&lt;25%)</div>
+          <div class="choice" onclick="pickChoice(this,'qb-speed-${idx}')">Same speed</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  area.appendChild(aiCard);
+  aiCard.scrollIntoView({ behavior:'smooth' });
+  document.getElementById('next-btn').textContent =
+    idx < EVAL_ALERTS.length - 1 ? 'NEXT ALERT →' : 'FINISH →';
+}
+
+function nextAlert() {
+  const idx = evalStep;
+
+  // Save phase B data
+  const helpSel  = document.querySelector(`#qb-help-${idx} .selected`);
+  const changeSel = document.querySelector(`#qb-change-${idx} .selected`);
+  const speedSel  = document.querySelector(`#qb-speed-${idx} .selected`);
+
+  if (currentResponse.alerts['alert_' + (idx+1)]) {
+    currentResponse.alerts['alert_' + (idx+1)].ai_helpfulness = helpSel  ? helpSel.textContent  : 'Not answered';
+    currentResponse.alerts['alert_' + (idx+1)].changed        = changeSel ? changeSel.textContent : 'Not answered';
+    currentResponse.alerts['alert_' + (idx+1)].speed          = speedSel  ? speedSel.textContent  : 'Not answered';
+  }
+
+  evalStep++;
+
+  if (evalStep < EVAL_ALERTS.length) {
+    showAlert(evalStep);
+    buildProgress();
+    window.scrollTo(0, 0);
+  } else {
+    document.getElementById('eval-alerts').classList.add('hidden');
+    document.getElementById('eval-overall').classList.remove('hidden');
+    window.scrollTo(0, 0);
+  }
+}
+
+function submitEval() {
+  const rOverall = document.querySelector('#r-overall .selected');
+  const rSpeed   = document.querySelector('#r-speed .selected');
+  const rTrust   = document.querySelector('#r-trust .selected');
+  const rExp     = document.querySelector('#r-exp .selected');
+
+  currentResponse.overall_rating = rOverall ? rOverall.textContent : 'Not answered';
+  currentResponse.speed_impact   = rSpeed   ? rSpeed.textContent   : 'Not answered';
+  currentResponse.trust_ai       = rTrust   ? rTrust.textContent   : 'Not answered';
+  currentResponse.experience     = rExp     ? rExp.textContent     : 'Not answered';
+  currentResponse.suggestions    = document.getElementById('r-improve').value;
+  currentResponse.feedback       = document.getElementById('r-feedback').value;
+
+  allResponses.push(currentResponse);
+  try { localStorage.setItem('cs_eval', JSON.stringify(allResponses)); } catch(e) {}
+
+  document.getElementById('eval-overall').classList.add('hidden');
+  document.getElementById('eval-done').classList.remove('hidden');
+  updateResults();
+}
+
+// ─────────────────────────────────────
+// RESULTS
+// ─────────────────────────────────────
+function updateResults() {
+  const data = allResponses;
+  document.getElementById('r-count').textContent = data.length;
+  document.getElementById('resp-count').textContent = data.length + ' RESPONSES';
+
+  if (data.length === 0) return;
+
+  // Average rating
+  const ratings = data.map(r => parseInt(r.overall_rating)).filter(n => !isNaN(n));
+  if (ratings.length) {
+    const avg = (ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1);
+    document.getElementById('r-avg').textContent = avg + '/10';
+  }
+
+  // Faster count
+  const faster = data.filter(r =>
+    r.speed_impact && r.speed_impact.toLowerCase().includes('faster')
+  ).length;
+  document.getElementById('r-faster').textContent = faster + '/' + data.length;
+
+  // Ratings chart
+  const ratingCounts = {};
+  ratings.forEach(r => ratingCounts[r] = (ratingCounts[r]||0)+1);
+  const rChart = document.getElementById('ratings-chart');
+  rChart.innerHTML = '<div class="bar-chart">' +
+    Object.entries(ratingCounts).sort((a,b)=>a[0]-b[0]).map(([r,c]) => `
+      <div class="bar-row">
+        <div class="bar-label">Rating ${r}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${(c/data.length*100).toFixed(0)}%;background:linear-gradient(90deg,#00d4ff,#00ff88)">${c} resp</div>
+        </div>
+      </div>
+    `).join('') + '</div>';
+
+  // Response table
+  const tbody = document.getElementById('resp-body');
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td style="font-family:monospace;font-size:11px">${r.participant}</td>
+      <td style="color:#00d4ff;font-family:monospace">${r.overall_rating}</td>
+      <td style="font-family:monospace;font-size:10px">${(r.speed_impact||'').substring(0,20)}</td>
+      <td style="font-family:monospace;font-size:10px">${(r.trust_ai||'').substring(0,20)}</td>
+      <td style="font-family:monospace;font-size:10px">${(r.experience||'').substring(0,20)}</td>
+    </tr>
+  `).join('');
+}
+
+// ─────────────────────────────────────
+// EXPORT
+// ─────────────────────────────────────
+function exportCSV() {
+  if (allResponses.length === 0) { alert('No data to export'); return; }
+  const headers = ['participant','timestamp','overall_rating','speed_impact','trust_ai','experience','suggestions','feedback'];
+  const rows = allResponses.map(r =>
+    headers.map(h => '"' + (r[h]||'').toString().replace(/"/g,'""') + '"').join(',')
+  );
+  const csv = [headers.join(','), ...rows].join('\n');
+  download(csv, 'cybershield_results.csv', 'text/csv');
+}
+
+function exportJSON() {
+  if (allResponses.length === 0) { alert('No data to export'); return; }
+  download(JSON.stringify(allResponses, null, 2), 'cybershield_results.json', 'application/json');
+}
+
+function download(content, filename, type) {
+  const blob = new Blob([content], {type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+}
+
+// ─────────────────────────────────────
+// SELECTION HELPERS
+// ─────────────────────────────────────
+function pickChoice(el, groupId) {
+  document.querySelectorAll('#' + groupId + ' .choice').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function pickRating(el, groupId) {
+  document.querySelectorAll('#' + groupId + ' .rating-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+
+// HACKER TERMINAL
+function startHackerTerminal() {
+  const terminal = document.getElementById('hacker-terminal');
+  if (!terminal) return;
+  const lines = [
+    { text: 'akash@glasgow:~$ python3 attack_simulation.py', color: '#00ff88', delay: 0 },
+    { text: '[INFO] Loading OWASP API Top 10 attack modules...', color: '#4a7090', delay: 800 },
+    { text: '[INFO] Target: http://localhost:8888 (crAPI)', color: '#4a7090', delay: 1400 },
+    { text: '[INFO] Splunk monitoring: http://localhost:8000', color: '#4a7090', delay: 1900 },
+    { text: '', color: '#000', delay: 2300 },
+    { text: '[ATTACK 1] BOLA — Broken Object Level Authorisation', color: '#ffaa00', delay: 2700 },
+    { text: '  → GET /community/api/v2/community/posts/recent', color: '#00d4ff', delay: 3100 },
+    { text: '  → [REQ 001] 200 OK — exposed: robot001@example.com', color: '#ff6688', delay: 3500 },
+    { text: '  → [REQ 002] 200 OK — exposed: pogba006@example.com', color: '#ff6688', delay: 3900 },
+    { text: '  → [REQ 003] 200 OK — exposed: adam007@example.com', color: '#ff6688', delay: 4300 },
+    { text: '  → [REQ 004-370] 200 OK — repeated unauthorised access...', color: '#ff6688', delay: 4700 },
+    { text: '  ✓ BOLA complete: 370 requests, 3 users data exposed', color: '#00ff88', delay: 5200 },
+    { text: '', color: '#000', delay: 5600 },
+    { text: '[ATTACK 2] Broken Authentication — Brute Force', color: '#ffaa00', delay: 6000 },
+    { text: '  → POST /identity/api/auth/login', color: '#00d4ff', delay: 6400 },
+    { text: '  → [TRY 001] wrongpassword1 → 401 Unauthorised', color: '#ff3366', delay: 6800 },
+    { text: '  → [TRY 002] wrongpassword2 → 401 Unauthorised', color: '#ff3366', delay: 7100 },
+    { text: '  → No account lockout after 256 attempts!', color: '#ff0044', delay: 7500 },
+    { text: '  ✓ Brute Force: vulnerability confirmed', color: '#00ff88', delay: 7900 },
+    { text: '', color: '#000', delay: 8300 },
+    { text: '[ATTACK 3] Rate Limiting Abuse — API4:2023', color: '#ffaa00', delay: 8700 },
+    { text: '  → 100 requests/min to /user/dashboard — no throttle', color: '#ff6688', delay: 9100 },
+    { text: '  ✓ Rate limit abuse confirmed', color: '#00ff88', delay: 9500 },
+    { text: '', color: '#000', delay: 9900 },
+    { text: '[ATTACK 4] User Enumeration — probing IDs 1-30', color: '#ffaa00', delay: 10300 },
+    { text: '  → GET /identity/api/v2/user/1/videos → 404', color: '#4a7090', delay: 10700 },
+    { text: '  → GET /identity/api/v2/user/2/videos → 404', color: '#4a7090', delay: 11000 },
+    { text: '  → GET /identity/api/v2/user/3/videos → 404', color: '#4a7090', delay: 11300 },
+    { text: '  ✓ Enumeration complete: 30 IDs probed', color: '#00ff88', delay: 11700 },
+    { text: '', color: '#000', delay: 12100 },
+    { text: '[SPLUNK] Detection rules triggered — 4 alerts generated', color: '#00d4ff', delay: 12500 },
+    { text: '[AI] Sending to llama3.2 via Ollama for triage...', color: '#00d4ff', delay: 13000 },
+    { text: '[AI] SEVERITY: HIGH | ATTACK: BOLA | CONFIDENCE: 80%', color: '#ffaa00', delay: 13600 },
+    { text: '[AI] ACTION: Block IP immediately | ESCALATE: YES', color: '#ffaa00', delay: 14100 },
+    { text: '', color: '#000', delay: 14500 },
+    { text: '[SAVED] Results → ~/mscproject/experiments/', color: '#00ff88', delay: 14900 },
+    { text: '[DONE] All attacks complete. Dashboard updated.', color: '#00ff88', delay: 15400 },
+    { text: 'akash@glasgow:~$ █', color: '#00ff88', delay: 15900 },
+  ];
+  lines.forEach(line => {
+    setTimeout(() => {
+      const div = document.createElement('div');
+      div.style.color = line.color;
+      div.textContent = line.text;
+      terminal.appendChild(div);
+      terminal.scrollTop = terminal.scrollHeight;
+    }, line.delay);
+  });
+  setTimeout(() => {
+    terminal.innerHTML = '';
+    startHackerTerminal();
+  }, 20000);
+}
+
+// ─────────────────────────────────────
+// BOOT — runs when page loads
+// ─────────────────────────────────────
+window.addEventListener('load', () => {
+
+  // Clock
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Animate metrics
+  animateNum('m-attacks', 991, 2500);
+  animateNum('m-alerts',  4,   1500);
+  animateNum('m-rate',    100, 2500, '%');
+  animateNum('m-triaged', 6,   2000);
+
+  // Add initial alerts
+  for (let i = 0; i < 4; i++) {
+    setTimeout(addAlert, i * 400);
+  }
+
+  // Keep adding alerts every 8 seconds
+  setInterval(addAlert, 8000);
+
+  // Tick request counter every 2 seconds
+  setInterval(tickRequests, 2000);
+
+  // Rotate triage every 5 seconds
+  rotateTriage();
+  setInterval(rotateTriage, 5000);
+
+  // Start hacker terminal
+  startHackerTerminal();
+
+  // Total requests start at your real data
+  totalRequests = 931;
+  document.getElementById('live-count').textContent = totalRequests.toLocaleString();
+
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "attack": "Rate Limiting Abuse",
+  "owasp": "API4:2023",
+  "timestamp": "2026-08-04T23:16:42.586386",
+  "endpoint": "http://localhost:8888/identity/api/v2/user/dashboard",
+  "requests": 100,
+  "successful": 100,
+  "throttled": 0,
+  "requests_per_second": 17.8,
+  "elapsed_seconds": 5.61,
+  "severity": "HIGH"
+}
