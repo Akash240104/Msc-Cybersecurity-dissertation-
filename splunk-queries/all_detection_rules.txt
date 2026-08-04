@@ -1,0 +1,55 @@
+==============================================
+MSc Dissertation - SPL Detection Rules
+Author: Akash
+Date: 4 August 2026
+==============================================
+
+RULE 1: BOLA Detection (API1:2023)
+----------------------------------------------
+index=api_logs "community/posts/recent"
+| rex field=_raw "(?<attacker_ip>\d+\.\d+\.\d+\.\d+)"
+| stats count by attacker_ip
+| where count > 5
+| eval severity="HIGH"
+| eval attack_type="BOLA - API1:2023"
+| table attacker_ip count severity attack_type
+
+RESULT: 370 requests detected, severity HIGH
+
+RULE 2: Brute Force Detection (API2:2023)
+----------------------------------------------
+index=api_logs "auth/login"
+| rex field=_raw "(?<attacker_ip>\d+\.\d+\.\d+\.\d+)"
+| stats count by attacker_ip
+| where count > 5
+| eval severity="CRITICAL"
+| eval attack_type="Brute Force - API2:2023"
+| table attacker_ip count severity attack_type
+
+RESULT: 256 attempts detected, severity CRITICAL
+
+RULE 3: Rate Limiting Abuse (API4:2023)
+----------------------------------------------
+index=api_logs "identity/api/v2/user/dashboard"
+| rex field=_raw "(?<attacker_ip>\d+\.\d+\.\d+\.\d+)"
+| bucket _time span=1m
+| stats count as requests_per_min by _time attacker_ip
+| where requests_per_min > 10
+| eval severity="HIGH"
+| eval attack_type="Rate Limiting Abuse - API4:2023"
+| table _time attacker_ip requests_per_min severity attack_type
+
+RESULT: 100 requests/min detected, severity HIGH
+
+RULE 4: User Enumeration (API1:2023)
+----------------------------------------------
+index=api_logs "user/" "404"
+| rex field=_raw "(?<attacker_ip>\d+\.\d+\.\d+\.\d+)"
+| rex field=_raw "user/(?<user_id>\d+)"
+| stats dc(user_id) as unique_ids count by attacker_ip
+| where unique_ids > 5
+| eval severity="HIGH"
+| eval attack_type="User Enumeration - API1:2023"
+| table attacker_ip unique_ids count severity attack_type
+
+RESULT: 30 unique IDs probed, 105 requests, severity HIGH
