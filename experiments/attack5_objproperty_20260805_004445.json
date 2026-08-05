@@ -1,0 +1,27 @@
+{
+  "attack": "Broken Object Property",
+  "owasp": "API3:2023",
+  "timestamp": "2026-08-05T00:44:45.288247",
+  "endpoint": "http://localhost:8888/identity/api/v2/user/dashboard",
+  "all_fields_returned": [
+    "id",
+    "name",
+    "email",
+    "number",
+    "picture_url",
+    "video_url",
+    "video_name",
+    "available_credit",
+    "video_id",
+    "role"
+  ],
+  "sensitive_fields_exposed": [
+    "picture_url",
+    "video_url",
+    "video_name",
+    "available_credit",
+    "video_id",
+    "role"
+  ],
+  "severity": "MEDIUM"
+}

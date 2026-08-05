@@ -1,0 +1,7 @@
+{
+  "attack": "Mass Assignment",
+  "owasp": "API6:2023",
+  "timestamp": "2026-08-05T00:45:11.396493",
+  "findings": [],
+  "severity": "LOW"
+}

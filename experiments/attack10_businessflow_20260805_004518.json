@@ -1,0 +1,8 @@
+{
+  "attack": "Business Flow Abuse",
+  "owasp": "API6:2023",
+  "timestamp": "2026-08-05T00:45:18.309562",
+  "initial_credit": 100.0,
+  "findings": [],
+  "severity": "LOW"
+}

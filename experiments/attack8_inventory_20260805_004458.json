@@ -1,0 +1,8 @@
+{
+  "attack": "Improper Inventory Management",
+  "owasp": "API9:2023",
+  "timestamp": "2026-08-05T00:44:58.144610",
+  "deprecated_accessible": [],
+  "findings": [],
+  "severity": "MEDIUM"
+}

@@ -1,0 +1,19 @@
+{
+  "attack": "Security Misconfiguration",
+  "owasp": "API8:2023",
+  "timestamp": "2026-08-05T00:44:50.946644",
+  "tests_run": 4,
+  "findings": [
+    {
+      "test": "Empty password login",
+      "status": 400,
+      "leaked_keywords": [
+        "validation",
+        "field error",
+        "springframework"
+      ],
+      "response_snippet": "{\"message\":\"Validation failed\",\"details\":\"org.springframework.validation.BeanPropertyBindingResult: "
+    }
+  ],
+  "severity": "MEDIUM"
+}
