@@ -676,6 +676,160 @@
     .prog-dot.done { background: #00ff88; }
     .prog-dot.active { background: #00d4ff; }
 
+
+    /* ── ATTACK ANIMATIONS ── */
+    @keyframes matrix-fall {
+      0% { transform: translateY(-100%); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+
+    @keyframes alert-flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    @keyframes attack-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255,51,102,0.7); }
+      70% { box-shadow: 0 0 0 20px rgba(255,51,102,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,51,102,0); }
+    }
+
+    @keyframes type-in {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    .matrix-char {
+      position: fixed;
+      font-family: monospace;
+      font-size: 14px;
+      color: #00ff88;
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 0;
+      animation: matrix-fall linear infinite;
+    }
+
+    .attack-active {
+      animation: attack-pulse 1s infinite;
+      border-color: #ff3366 !important;
+    }
+
+    .alert-flash {
+      animation: alert-flash 0.5s infinite;
+    }
+
+    .overlay-attack {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(255,0,0,0.05);
+      height: 4px;
+      z-index: 100;
+      display: none;
+    }
+
+    .overlay-attack.active {
+      display: block;
+      animation: alert-flash 0.3s infinite;
+    }
+
+    /* Attack button states */
+    .btn-attack {
+      background: linear-gradient(135deg, #ff3366, #ff0044);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 0 20px rgba(255,51,102,0.4);
+    }
+
+    .btn-attack:hover {
+      box-shadow: 0 0 30px rgba(255,51,102,0.8);
+      transform: translateY(-2px);
+    }
+
+    .btn-attack.running {
+      background: linear-gradient(135deg, #ffaa00, #ff6600);
+      animation: attack-pulse 1s infinite;
+    }
+
+    .btn-attack.complete {
+      background: linear-gradient(135deg, #00ff88, #00aa55);
+    }
+
+    /* Live attack display */
+    .attack-overlay {
+      position: fixed;
+      top: 64px;
+      right: 20px;
+      width: 320px;
+      background: rgba(4,15,30,0.97);
+      border: 1px solid #ff3366;
+      border-radius: 8px;
+      padding: 16px;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 0 30px rgba(255,51,102,0.3);
+    }
+
+    .attack-overlay.visible {
+      display: block;
+      animation: slide-in 0.3s ease;
+    }
+
+    .attack-overlay-title {
+      font-family: monospace;
+      font-size: 11px;
+      color: #ff3366;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .attack-overlay-title::before {
+      content: "⚠";
+      animation: alert-flash 0.5s infinite;
+    }
+
+    .attack-stat {
+      display: flex;
+      justify-content: space-between;
+      font-family: monospace;
+      font-size: 12px;
+      margin-bottom: 6px;
+      color: #c8e0f0;
+    }
+
+    .attack-stat-val {
+      color: #ff6688;
+      font-weight: bold;
+    }
+
+    .attack-progress {
+      height: 4px;
+      background: #0d2040;
+      border-radius: 2px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .attack-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff3366, #ffaa00);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+
     .hidden { display: none !important; }
 
     /* ─────────────────────────────
@@ -761,6 +915,36 @@
 <!-- ══════════════════════════════
      HEADER
 ══════════════════════════════════ -->
+
+<!-- ATTACK TOP BAR -->
+<div class="overlay-attack" id="attack-top-bar"></div>
+
+<!-- ATTACK OVERLAY -->
+<div class="attack-overlay" id="attack-overlay">
+  <div class="attack-overlay-title">
+    <span id="ov-name">BOLA</span> ATTACK IN PROGRESS
+  </div>
+  <div class="attack-stat">
+    <span>OWASP:</span>
+    <span class="attack-stat-val" id="ov-owasp">API1:2023</span>
+  </div>
+  <div class="attack-stat">
+    <span>Requests Sent:</span>
+    <span class="attack-stat-val" id="ov-sent">0</span>
+  </div>
+  <div class="attack-stat">
+    <span>Successful:</span>
+    <span class="attack-stat-val" id="ov-success">0</span>
+  </div>
+  <div class="attack-stat">
+    <span>Rate:</span>
+    <span class="attack-stat-val" id="ov-rate">0/min</span>
+  </div>
+  <div class="attack-progress">
+    <div class="attack-progress-fill" id="ov-progress" style="width:0%"></div>
+  </div>
+</div>
+
 <header>
   <div class="logo">CS</div>
   <div>
@@ -880,7 +1064,47 @@
       </div>
       <div id="hacker-terminal" style="padding:14px 16px;font-family:monospace;font-size:12px;line-height:1.9;max-height:220px;overflow:hidden"></div>
     </div>
-  </div>
+  
+
+        <!-- TOKEN INPUT -->
+        <div class="panel" style="margin-bottom:15px">
+          <div class="panel-header">
+            <div class="panel-title">crAPI Connection</div>
+            <div class="panel-badge" id="conn-status">DISCONNECTED</div>
+          </div>
+          <div class="panel-body" style="display:flex;gap:10px;align-items:center">
+            <input type="text" id="token-input" 
+              placeholder="Paste your crAPI Bearer token here..."
+              style="flex:1;background:#020810;border:1px solid #0d2040;border-radius:4px;padding:10px;color:#c8e0f0;font-family:monospace;font-size:11px;outline:none">
+            <button onclick="setToken()" 
+              style="background:#00d4ff;color:#000;border:none;padding:10px 20px;border-radius:4px;font-family:monospace;font-weight:bold;cursor:pointer">
+              CONNECT
+            </button>
+          </div>
+        </div>
+
+        <!-- ATTACK LAUNCHER -->
+        <div class="panel" style="margin-top:15px">
+          <div class="panel-header">
+            <div class="panel-title">Attack Launcher</div>
+            <div class="panel-badge">SIMULATION MODE</div>
+          </div>
+          <div class="panel-body">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+              <button class="btn-attack" onclick="launchAttack('BOLA','API1:2023',20)">▶ BOLA</button>
+              <button class="btn-attack" onclick="launchAttack('Brute Force','API2:2023',30)">▶ BRUTE FORCE</button>
+              <button class="btn-attack" onclick="launchAttack('Rate Limit','API4:2023',100)">▶ RATE LIMIT</button>
+              <button class="btn-attack" onclick="launchAttack('User Enum','API1:2023',30)">▶ USER ENUM</button>
+              <button class="btn-attack" onclick="launchAttack('Obj Property','API3:2023',10)">▶ OBJ PROPERTY</button>
+              <button class="btn-attack" onclick="launchAttack('Misconfig','API8:2023',5)">▶ MISCONFIG</button>
+            </div>
+            <div style="font-family:monospace;font-size:10px;color:#4a7090;text-align:center">
+              Click any attack to simulate live — dashboard updates in real time
+            </div>
+          </div>
+        </div>
+
+</div>
 
 <!-- ══════════════════════════════
      PAGE 2: DETECTION RESULTS
@@ -1853,6 +2077,201 @@ function startHackerTerminal() {
     terminal.innerHTML = '';
     startHackerTerminal();
   }, 20000);
+}
+
+
+
+// Set token for real attacks
+async function setToken() {
+  const token = document.getElementById('token-input').value.trim();
+  if (!token) { alert('Please paste your Bearer token'); return; }
+  
+  window.crapi_token = token;
+  
+  fetch('http://localhost:5000/set_token', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({token: token})
+  }).then(r => r.json()).then(data => {
+    document.getElementById('conn-status').textContent = 'CONNECTED';
+    document.getElementById('conn-status').style.color = '#00ff88';
+    addTermLine('[CONNECTED] Real attacks enabled', 'term-success');
+  }).catch(e => {
+    document.getElementById('conn-status').textContent = 'SERVER OFFLINE';
+    addTermLine('[WARN] Server offline — simulation mode active', 'term-warn');
+  });
+}
+
+function addTermLine(text, cls) {
+  const terminal = document.getElementById('hacker-terminal');
+  if (!terminal) return;
+  const div = document.createElement('div');
+  div.style.color = cls === 'term-success' ? '#00ff88' : 
+                    cls === 'term-attack' ? '#ff6688' :
+                    cls === 'term-warn' ? '#ffaa00' : '#4a7090';
+  div.textContent = text;
+  terminal.appendChild(div);
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+// ─────────────────────────────────────
+// MATRIX RAIN ANIMATION
+// ─────────────────────────────────────
+function startMatrixRain() {
+  const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノ";
+  const columns = Math.floor(window.innerWidth / 20);
+  
+  for (let i = 0; i < 15; i++) {
+    setTimeout(() => {
+      const char = document.createElement('div');
+      char.className = 'matrix-char';
+      char.textContent = chars[Math.floor(Math.random() * chars.length)];
+      char.style.left = Math.random() * 100 + 'vw';
+      char.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      char.style.animationDelay = Math.random() * 2 + 's';
+      char.style.fontSize = (Math.random() * 8 + 10) + 'px';
+      char.style.opacity = (Math.random() * 0.4 + 0.1).toString();
+      document.body.appendChild(char);
+      
+      setTimeout(() => {
+        if (char.parentNode) char.parentNode.removeChild(char);
+      }, 6000);
+    }, i * 200);
+  }
+}
+
+// ─────────────────────────────────────
+// LIVE ATTACK SIMULATION
+// ─────────────────────────────────────
+let attackRunning = false;
+let attackInterval = null;
+
+function launchAttack(attackName, owasp, count) {
+  if (attackRunning) return;
+  attackRunning = true;
+
+  // Map attack name to API endpoint
+  const endpoints = {
+    'BOLA': '/attack/bola',
+    'Brute Force': '/attack/bruteforce',
+    'Rate Limit': '/attack/ratelimit',
+    'User Enum': '/attack/userenum'
+  };
+
+  const apiEndpoint = endpoints[attackName];
+  const SERVER = 'http://localhost:5000';
+
+  // Show attack overlay
+  const overlay = document.getElementById('attack-overlay');
+  overlay.classList.add('visible');
+  document.getElementById('ov-name').textContent = attackName;
+  document.getElementById('ov-owasp').textContent = owasp;
+
+  // Flash red on screen
+  const topBar = document.getElementById('attack-top-bar');
+  topBar.classList.add('active');
+
+  // Start matrix rain
+  startMatrixRain();
+
+  let sent = 0;
+  let success = 0;
+
+  attackInterval = setInterval(() => {
+    sent++;
+    if (Math.random() > 0.05) success++;
+
+    document.getElementById('ov-sent').textContent = sent;
+    document.getElementById('ov-success').textContent = success;
+    document.getElementById('ov-rate').textContent = 
+      (sent / (attackName === 'Rate Limiting' ? 0.1 : 1)).toFixed(0) + '/min';
+    
+    const pct = (sent / count * 100).toFixed(0);
+    document.getElementById('ov-progress').style.width = pct + '%';
+
+    // Add to terminal
+    const terminal = document.getElementById('hacker-terminal');
+    if (terminal) {
+      const line = document.createElement('div');
+      line.style.color = success > sent * 0.8 ? '#ff6688' : '#4a7090';
+      line.textContent = '[REQ ' + String(sent).padStart(3,'0') + '] ' + 
+        attackName + ' → ' + (Math.random() > 0.05 ? '200 OK' : '403') + 
+        ' (' + owasp + ')';
+      terminal.appendChild(line);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    // Update dashboard metrics
+    totalRequests++;
+    document.getElementById('live-count').textContent = 
+      totalRequests.toLocaleString();
+    document.getElementById('m-attacks').textContent = totalRequests;
+
+    if (sent >= count) {
+      clearInterval(attackInterval);
+      finishAttack(attackName, owasp, sent, success);
+    }
+  }, 100);
+}
+
+function finishAttack(name, owasp, sent, success) {
+  // Add final alert
+  addAlert();
+
+  // Update overlay
+  document.getElementById('ov-progress').style.width = '100%';
+  document.getElementById('ov-progress').style.background = 
+    'linear-gradient(90deg, #00ff88, #00aa55)';
+
+  // Call real attack server
+  if (typeof apiEndpoint !== 'undefined' && apiEndpoint) {
+    fetch(SERVER + apiEndpoint, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({count: sent, token: window.crapi_token || ''})
+    }).then(r => r.json()).then(data => {
+      if (data.exposed_users) {
+        addTermLine('[REAL] Exposed: ' + data.exposed_users.join(', '), 'term-attack');
+      }
+      if (data.attempts) {
+        addTermLine('[REAL] Attempts: ' + data.attempts, 'term-attack');
+      }
+      if (data.ai_triage) {
+        document.getElementById('t-sev').textContent = data.ai_triage.severity;
+        document.getElementById('t-conf').textContent = data.ai_triage.confidence;
+        document.getElementById('t-action').textContent = data.ai_triage.action;
+        document.getElementById('t-esc').textContent = data.ai_triage.escalate;
+      }
+      addTermLine('[REAL] Results saved to experiments/', 'term-success');
+    }).catch(e => {
+      addTermLine('[SIM] Server offline - simulation mode', 'term-warn');
+    });
+  }
+
+  // Hide overlay after 3 seconds
+  setTimeout(() => {
+    document.getElementById('attack-overlay').classList.remove('visible');
+    document.getElementById('attack-top-bar').classList.remove('active');
+    attackRunning = false;
+    showTriageResult(name, owasp);
+  }, 3000);
+
+  // Matrix rain celebration
+  for (let i = 0; i < 5; i++) {
+    setTimeout(startMatrixRain, i * 300);
+  }
+}
+
+function showTriageResult(attackName, owasp) {
+  // Switch to triage tab automatically
+  const triagePage = document.getElementById('page-triage');
+  if (triagePage) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    triagePage.classList.remove('hidden');
+    triagePage.classList.add('active');
+  }
+  rotateTriage();
 }
 
 // ─────────────────────────────────────
