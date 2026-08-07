@@ -4,7 +4,7 @@ CyberShield Attack Server
 Connects the web dashboard to real attacks
 Runs on localhost:5000
 """
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import subprocess
 import requests
@@ -419,6 +419,12 @@ def run_triage():
 
 
 
+@app.route('/')
+def dashboard():
+    import os
+    dashboard_dir = os.path.expanduser('~/mscproject/evaluation')
+    return send_from_directory(dashboard_dir, 'cybershield.html')
+
 @app.route('/login', methods=['POST'])
 def login():
     global TOKEN
@@ -433,7 +439,7 @@ def login():
             timeout=5
         )
         result = r.json()
-        if 'token' in result:
+        if 'token' in result and result['token']:
             TOKEN = result['token']
             return jsonify({"status": "ok", "message": "Login successful", "token": TOKEN})
         else:

@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
   <meta charset="UTF-8">
   <title>CyberShield SOC Platform</title>
   <style>
@@ -1073,11 +1076,11 @@
             <div class="panel-badge" id="conn-status">DISCONNECTED</div>
           </div>
           <div class="panel-body" style="display:flex;flex-direction:column;gap:8px">
-            <input type="email" id="login-email"
+            <input type="email" id="login-email" autocomplete="off"
               placeholder="crAPI email address"
               style="background:#020810;border:1px solid #0d2040;border-radius:4px;padding:10px;color:#c8e0f0;font-family:monospace;font-size:12px;outline:none">
             <div style="display:flex;gap:8px">
-              <input type="password" id="login-password"
+              <input type="password" id="login-password" autocomplete="new-password"
                 placeholder="password"
                 style="flex:1;background:#020810;border:1px solid #0d2040;border-radius:4px;padding:10px;color:#c8e0f0;font-family:monospace;font-size:12px;outline:none">
               <button onclick="doLogin()"
@@ -2136,7 +2139,7 @@ async function doLogin() {
       body: JSON.stringify({email: email, password: password})
     });
     const data = await r.json();
-    if (data.status === 'ok') {
+    if (r.ok && data.status === 'ok') {
       window.crapi_token = data.token || '';
       console.log('[DEBUG] token stored:', window.crapi_token.substring(0,20) + '...');
       document.getElementById('conn-status').textContent = 'CONNECTED';
@@ -2147,7 +2150,8 @@ async function doLogin() {
     } else {
       document.getElementById('conn-status').textContent = 'LOGIN FAILED';
       document.getElementById('conn-status').style.color = '#ff4444';
-      addTermLine('[ERROR] Login failed: ' + data.message, 'term-warn');
+      document.getElementById('login-password').value = '';
+      addTermLine('[ERROR] Wrong email or password — try again', 'term-warn');
     }
   } catch(e) {
     document.getElementById('conn-status').textContent = 'SERVER OFFLINE';
@@ -2155,25 +2159,7 @@ async function doLogin() {
   }
 }
 
-async function setToken() {
-  const token = document.getElementById('token-input').value.trim();
-  if (!token) { alert('Please paste your Bearer token'); return; }
-  
-  window.crapi_token = token;
-  
-  fetch('http://localhost:5000/set_token', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({token: token})
-  }).then(r => r.json()).then(data => {
-    document.getElementById('conn-status').textContent = 'CONNECTED';
-    document.getElementById('conn-status').style.color = '#00ff88';
-    addTermLine('[CONNECTED] Real attacks enabled', 'term-success');
-  }).catch(e => {
-    document.getElementById('conn-status').textContent = 'SERVER OFFLINE';
-    addTermLine('[WARN] Server offline — simulation mode active', 'term-warn');
-  });
-}
+// setToken removed - replaced by doLogin
 
 function addTermLine(text, cls) {
   const terminal = document.getElementById('hacker-terminal');
@@ -2395,6 +2381,13 @@ window.addEventListener('load', () => {
   updateClock();
   setInterval(updateClock, 1000);
 
+  // Reset connection state on every page load
+  document.getElementById('conn-status').textContent = 'DISCONNECTED';
+  document.getElementById('conn-status').style.color = '';
+  window.crapi_token = '';
+  if (document.getElementById('login-email')) document.getElementById('login-email').value = '';
+  if (document.getElementById('login-password')) document.getElementById('login-password').value = '';
+
   // Start at zero — real data comes from live attacks
   totalRequests = 0;
   document.getElementById('live-count').textContent = '0';
@@ -2422,6 +2415,20 @@ window.addEventListener('load', () => {
 
 });
 
+// Force reset even on Chrome bfcache restore
+window.addEventListener('pageshow', function(event) {
+  window.crapi_token = '';
+  const cs = document.getElementById('conn-status');
+  if (cs) { cs.textContent = 'DISCONNECTED'; cs.style.color = ''; }
+  const lm = document.getElementById('launch-mode');
+  if (lm) lm.textContent = 'SIMULATION MODE';
+  const email = document.getElementById('login-email');
+  const pass = document.getElementById('login-password');
+  if (email) email.value = '';
+  if (pass) pass.value = '';
+  const terminal = document.getElementById('hacker-terminal');
+  if (terminal) terminal.innerHTML = '<div style="color:#4a7090;">akash@glasgow-soc:~$ waiting for attack...<span style="display:inline-block;width:8px;height:14px;background:#00d4ff;margin-left:4px;animation:blink 1s infinite;vertical-align:-2px;"></span></div>';
+});
 </script>
 </body>
 </html>
