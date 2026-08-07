@@ -8,27 +8,27 @@
   <title>CyberShield SOC Platform</title>
   <style>
 
-    /* ─────────────────────────────
-       RESET — removes browser defaults
-    ───────────────────────────────── */
+    /* 
+       RESET  removes browser defaults
+     */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
-    /* ─────────────────────────────
-       BASE — dark background, light text
-    ───────────────────────────────── */
+    /* 
+       BASE  dark background, light text
+     */
     body {
       background: #020810;
       color: #c8e0f0;
       font-family: Arial, sans-serif;
     }
 
-    /* ─────────────────────────────
+    /* 
        HEADER
-    ───────────────────────────────── */
+     */
     header {
       display: flex;
       align-items: center;
@@ -98,9 +98,9 @@
       letter-spacing: 1px;
     }
 
-    /* ─────────────────────────────
+    /* 
        ANIMATIONS
-    ───────────────────────────────── */
+     */
     @keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.2; }
@@ -116,9 +116,9 @@
       50%       { box-shadow: 0 0 25px rgba(0,212,255,0.7); }
     }
 
-    /* ─────────────────────────────
+    /* 
        NAV TABS
-    ───────────────────────────────── */
+     */
     nav {
       display: flex;
       background: #040f1e;
@@ -158,9 +158,9 @@
       animation: blink 1s infinite;
     }
 
-    /* ─────────────────────────────
-       PAGES — only active one shows
-    ───────────────────────────────── */
+    /* 
+       PAGES  only active one shows
+     */
     .page {
       display: none;
       padding: 20px;
@@ -170,9 +170,9 @@
       display: block;
     }
 
-    /* ─────────────────────────────
+    /* 
        METRIC CARDS
-    ───────────────────────────────── */
+     */
     .metrics {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -232,9 +232,9 @@
       font-family: monospace;
     }
 
-    /* ─────────────────────────────
+    /* 
        TWO COLUMN GRID
-    ───────────────────────────────── */
+     */
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -242,9 +242,9 @@
       margin-bottom: 15px;
     }
 
-    /* ─────────────────────────────
-       PANEL — reusable card
-    ───────────────────────────────── */
+    /* 
+       PANEL  reusable card
+     */
     .panel {
       background: #080f1f;
       border: 1px solid #0d2040;
@@ -283,9 +283,9 @@
       padding: 16px;
     }
 
-    /* ─────────────────────────────
+    /* 
        ALERT FEED
-    ───────────────────────────────── */
+     */
     .alert-feed {
       max-height: 280px;
       overflow-y: auto;
@@ -356,9 +356,9 @@
       flex-shrink: 0;
     }
 
-    /* ─────────────────────────────
+    /* 
        DETECTION TABLE
-    ───────────────────────────────── */
+     */
     .det-table {
       width: 100%;
       border-collapse: collapse;
@@ -394,9 +394,9 @@
       border: 1px solid;
     }
 
-    /* ─────────────────────────────
+    /* 
        AI TRIAGE PANEL
-    ───────────────────────────────── */
+     */
     .triage-box {
       background: #020810;
       border: 1px solid #0d2040;
@@ -431,9 +431,9 @@
     .triage-val.warn { color: #ffaa00; }
     .triage-val.ok { color: #00ff88; }
 
-    /* ─────────────────────────────
+    /* 
        LIVE COUNTER
-    ───────────────────────────────── */
+     */
     .live-counter {
       text-align: center;
       padding: 20px;
@@ -455,9 +455,9 @@
       margin-top: 8px;
     }
 
-    /* ─────────────────────────────
+    /* 
        EVALUATION PAGE
-    ───────────────────────────────── */
+     */
     .eval-wrap {
       max-width: 720px;
       margin: 0 auto;
@@ -680,7 +680,7 @@
     .prog-dot.active { background: #00d4ff; }
 
 
-    /* ── ATTACK ANIMATIONS ── */
+    /*  ATTACK ANIMATIONS  */
     @keyframes matrix-fall {
       0% { transform: translateY(-100%); opacity: 1; }
       100% { transform: translateY(100vh); opacity: 0; }
@@ -800,7 +800,7 @@
     }
 
     .attack-overlay-title::before {
-      content: "⚠";
+      content: "";
       animation: alert-flash 0.5s infinite;
     }
 
@@ -835,9 +835,9 @@
 
     .hidden { display: none !important; }
 
-    /* ─────────────────────────────
+    /* 
        RESULTS PAGE
-    ───────────────────────────────── */
+     */
     .result-stats {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -915,9 +915,9 @@
 </head>
 <body>
 
-<!-- ══════════════════════════════
+<!-- 
      HEADER
-══════════════════════════════════ -->
+ -->
 
 <!-- ATTACK TOP BAR -->
 <div class="overlay-attack" id="attack-top-bar"></div>
@@ -962,9 +962,9 @@
   </div>
 </header>
 
-<!-- ══════════════════════════════
+<!-- 
      NAV TABS
-══════════════════════════════════ -->
+ -->
 <nav>
   <div class="tab active" onclick="showPage('dashboard', this)">
     Live Dashboard
@@ -976,9 +976,9 @@
   <div class="tab" onclick="showPage('results', this)">Results</div>
 </nav>
 
-<!-- ══════════════════════════════
+<!-- 
      PAGE 1: LIVE DASHBOARD
-══════════════════════════════════ -->
+ -->
 <div class="page active" id="page-dashboard">
 
   <!-- Metrics Row -->
@@ -1099,29 +1099,29 @@
           </div>
           <div class="panel-body">
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
-              <button class="btn-attack" onclick="launchAttack('BOLA','API1:2023',20)">▶ BOLA</button>
-              <button class="btn-attack" onclick="launchAttack('Brute Force','API2:2023',30)">▶ BRUTE FORCE</button>
-              <button class="btn-attack" onclick="launchAttack('Rate Limit','API4:2023',100)">▶ RATE LIMIT</button>
-              <button class="btn-attack" onclick="launchAttack('User Enum','API1:2023',30)">▶ USER ENUM</button>
-              <button class="btn-attack" onclick="launchAttack('Obj Property','API3:2023',10)">▶ OBJ PROPERTY</button>
-              <button class="btn-attack" onclick="launchAttack('Misconfig','API8:2023',5)">▶ MISCONFIG</button>
+              <button class="btn-attack" onclick="launchAttack('BOLA','API1:2023',20)"> BOLA</button>
+              <button class="btn-attack" onclick="launchAttack('Brute Force','API2:2023',30)"> BRUTE FORCE</button>
+              <button class="btn-attack" onclick="launchAttack('Rate Limit','API4:2023',100)"> RATE LIMIT</button>
+              <button class="btn-attack" onclick="launchAttack('User Enum','API1:2023',30)"> USER ENUM</button>
+              <button class="btn-attack" onclick="launchAttack('Obj Property','API3:2023',10)"> OBJ PROPERTY</button>
+              <button class="btn-attack" onclick="launchAttack('Misconfig','API8:2023',5)"> MISCONFIG</button>
             </div>
             <div style="font-family:monospace;font-size:10px;color:#4a7090;text-align:center">
-              Click any attack to simulate live — dashboard updates in real time
+              Click any attack to simulate live  dashboard updates in real time
             </div>
           </div>
         </div>
 
 </div>
 
-<!-- ══════════════════════════════
+<!-- 
      PAGE 2: DETECTION RESULTS
-══════════════════════════════════ -->
+ -->
 <div class="page hidden" id="page-detection">
 
   <div class="panel" style="margin-bottom:15px">
     <div class="panel-header">
-      <div class="panel-title">OWASP API Top 10 — SPL Detection Results</div>
+      <div class="panel-title">OWASP API Top 10  SPL Detection Results</div>
       <div class="panel-badge">SPLUNK ENTERPRISE 9.3</div>
     </div>
     <div class="panel-body" style="padding:0">
@@ -1169,7 +1169,7 @@
         </div>
         <div style="background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px;font-family:monospace;font-size:11px;color:#4a7090">
           <div style="color:#00d4ff;margin-bottom:6px">// KEY FINDING</div>
-          SPL rules detect attacks immediately with any dataset size. MLTK requires historical baseline — detected spike anomaly after sufficient traffic volume. Both approaches complement each other.
+          SPL rules detect attacks immediately with any dataset size. MLTK requires historical baseline  detected spike anomaly after sufficient traffic volume. Both approaches complement each other.
         </div>
       </div>
     </div>
@@ -1177,43 +1177,43 @@
 
 </div>
 
-<!-- ══════════════════════════════
+<!-- 
      PAGE 3: AI TRIAGE
-══════════════════════════════════ -->
+ -->
 <div class="page hidden" id="page-triage">
 
   <div class="grid-2">
     <div class="panel">
       <div class="panel-header">
         <div class="panel-title">AI Triage Output</div>
-        <div class="panel-badge">LLAMA 3.2 — OLLAMA</div>
+        <div class="panel-badge">LLAMA 3.2  OLLAMA</div>
       </div>
       <div class="panel-body">
         <div class="triage-box" id="triage-box">
-          <div class="triage-comment">// AI SOC ANALYST — ALERT TRIAGE</div>
+          <div class="triage-comment">// AI SOC ANALYST  ALERT TRIAGE</div>
           <div class="triage-row">
             <span class="triage-key">SEVERITY:</span>
-            <span class="triage-val high" id="t-sev">HIGH</span>
+            <span class="triage-val high" id="t-sev"></span>
           </div>
           <div class="triage-row">
             <span class="triage-key">ATTACK_TYPE:</span>
-            <span class="triage-val" id="t-type">BOLA — API1:2023</span>
+            <span class="triage-val" id="t-type"></span>
           </div>
           <div class="triage-row">
             <span class="triage-key">CONFIDENCE:</span>
-            <span class="triage-val ok" id="t-conf">80%</span>
+            <span class="triage-val ok" id="t-conf"></span>
           </div>
           <div class="triage-row">
             <span class="triage-key">ACTION:</span>
-            <span class="triage-val" id="t-action">Block IP · Escalate to Tier 2</span>
+            <span class="triage-val" id="t-action">Run an attack to see real triage</span>
           </div>
           <div class="triage-row">
             <span class="triage-key">ESCALATE:</span>
-            <span class="triage-val warn" id="t-esc">YES → Tier 2</span>
+            <span class="triage-val warn" id="t-esc"></span>
           </div>
           <div class="triage-row">
             <span class="triage-key">FALSE_POS:</span>
-            <span class="triage-val" id="t-fp">Medium</span>
+            <span class="triage-val" id="t-fp"></span>
           </div>
         </div>
 
@@ -1231,17 +1231,17 @@
       <div class="panel-body">
         <div style="font-family:monospace;font-size:12px;line-height:2;color:#4a7090">
           <div style="color:#00ff88">Step 1: Splunk fires alert</div>
-          <div style="padding-left:16px;color:#4a7090">└─ SPL rule threshold exceeded</div>
+          <div style="padding-left:16px;color:#4a7090"> SPL rule threshold exceeded</div>
           <div style="color:#00d4ff">Step 2: Python script triggered</div>
-          <div style="padding-left:16px;color:#4a7090">└─ llm_triage.py reads alert data</div>
+          <div style="padding-left:16px;color:#4a7090"> llm_triage.py reads alert data</div>
           <div style="color:#00ff88">Step 3: Prompt built automatically</div>
-          <div style="padding-left:16px;color:#4a7090">└─ IP, endpoint, count, attack type</div>
+          <div style="padding-left:16px;color:#4a7090"> IP, endpoint, count, attack type</div>
           <div style="color:#00d4ff">Step 4: Sent to Llama 3.2 (local)</div>
-          <div style="padding-left:16px;color:#4a7090">└─ Ollama running on localhost</div>
+          <div style="padding-left:16px;color:#4a7090"> Ollama running on localhost</div>
           <div style="color:#00ff88">Step 5: AI returns triage analysis</div>
-          <div style="padding-left:16px;color:#4a7090">└─ Severity, action, confidence</div>
+          <div style="padding-left:16px;color:#4a7090"> Severity, action, confidence</div>
           <div style="color:#ffaa00">Step 6: Saved to experiments/</div>
-          <div style="padding-left:16px;color:#4a7090">└─ Audit trail maintained</div>
+          <div style="padding-left:16px;color:#4a7090"> Audit trail maintained</div>
         </div>
       </div>
     </div>
@@ -1249,9 +1249,9 @@
 
 </div>
 
-<!-- ══════════════════════════════
+<!-- 
      PAGE 4: EVALUATION
-══════════════════════════════════ -->
+ -->
 <div class="page hidden" id="page-evaluation">
 <div class="eval-wrap">
 
@@ -1272,12 +1272,12 @@
           <span style="color:#00ff88;font-family:monospace">Phase B:</span> See the AI triage output and rate its usefulness
         </p>
         <div style="background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px;font-family:monospace;font-size:11px;color:#4a7090;margin-bottom:20px">
-          ⚠️ No prior Splunk knowledge required — all alerts in plain format<br>
-          🔒 Responses are anonymous — used for academic research only<br>
-          ⏱️ Your response time is recorded automatically
+           No prior Splunk knowledge required  all alerts in plain format<br>
+           Responses are anonymous  used for academic research only<br>
+           Your response time is recorded automatically
         </div>
         <input class="name-input" id="participant-name" placeholder="Enter name or ID (e.g. Participant_1)">
-        <button class="btn-primary" onclick="startEval()">BEGIN EVALUATION →</button>
+        <button class="btn-primary" onclick="startEval()">BEGIN EVALUATION </button>
       </div>
     </div>
   </div>
@@ -1287,7 +1287,7 @@
     <div class="progress-bar-wrap" id="progress-bar"></div>
     <div id="alert-card-area"></div>
     <div style="text-align:right;margin-top:16px">
-      <button class="btn-primary" id="next-btn" onclick="nextAlert()">NEXT →</button>
+      <button class="btn-primary" id="next-btn" onclick="nextAlert()">NEXT </button>
     </div>
   </div>
 
@@ -1316,19 +1316,19 @@
         <div class="question-group">
           <div class="question-label">Did AI triage make you faster?</div>
           <div class="choices" id="r-speed">
-            <div class="choice" onclick="pickChoice(this,'r-speed')">Yes — much faster</div>
-            <div class="choice" onclick="pickChoice(this,'r-speed')">Yes — slightly faster</div>
+            <div class="choice" onclick="pickChoice(this,'r-speed')">Yes  much faster</div>
+            <div class="choice" onclick="pickChoice(this,'r-speed')">Yes  slightly faster</div>
             <div class="choice" onclick="pickChoice(this,'r-speed')">No difference</div>
-            <div class="choice" onclick="pickChoice(this,'r-speed')">No — slowed me down</div>
+            <div class="choice" onclick="pickChoice(this,'r-speed')">No  slowed me down</div>
           </div>
         </div>
 
         <div class="question-group">
           <div class="question-label">Would you trust AI triage in a real SOC?</div>
           <div class="choices" id="r-trust">
-            <div class="choice" onclick="pickChoice(this,'r-trust')">Yes — fully</div>
-            <div class="choice" onclick="pickChoice(this,'r-trust')">Yes — with human oversight</div>
-            <div class="choice" onclick="pickChoice(this,'r-trust')">Maybe — needs improvement</div>
+            <div class="choice" onclick="pickChoice(this,'r-trust')">Yes  fully</div>
+            <div class="choice" onclick="pickChoice(this,'r-trust')">Yes  with human oversight</div>
+            <div class="choice" onclick="pickChoice(this,'r-trust')">Maybe  needs improvement</div>
             <div class="choice" onclick="pickChoice(this,'r-trust')">No</div>
           </div>
         </div>
@@ -1353,7 +1353,7 @@
           <textarea class="text-input" id="r-feedback" placeholder="Additional comments..."></textarea>
         </div>
 
-        <button class="btn-primary" onclick="submitEval()">SUBMIT ✓</button>
+        <button class="btn-primary" onclick="submitEval()">SUBMIT </button>
       </div>
     </div>
   </div>
@@ -1362,13 +1362,13 @@
   <div id="eval-done" class="hidden">
     <div class="eval-card" style="border-color:#00ff88">
       <div class="eval-card-body" style="text-align:center;padding:40px">
-        <div style="font-size:60px;margin-bottom:16px">✓</div>
+        <div style="font-size:60px;margin-bottom:16px"></div>
         <div style="font-family:monospace;font-size:24px;color:#00ff88;letter-spacing:2px;margin-bottom:12px">EVALUATION COMPLETE</div>
         <p style="color:#4a7090;font-size:13px;margin-bottom:20px">Thank you. Your responses have been saved.</p>
         <div style="background:#020810;border:1px solid #0d2040;border-radius:6px;padding:16px;text-align:left;font-family:monospace;font-size:11px;color:#4a7090">
           Research: AI-Assisted SOC Alert Triage Evaluation<br>
           Institution: University of Glasgow<br>
-          Programme: MSc Cybersecurity — COMPSCI5086P<br>
+          Programme: MSc Cybersecurity  COMPSCI5086P<br>
           Supervisor: Professor Jeremy Singer
         </div>
       </div>
@@ -1378,9 +1378,9 @@
 </div>
 </div>
 
-<!-- ══════════════════════════════
+<!-- 
      PAGE 5: RESULTS
-══════════════════════════════════ -->
+ -->
 <div class="page hidden" id="page-results">
 
   <div class="result-stats">
@@ -1389,11 +1389,11 @@
       <div class="result-label">Participants</div>
     </div>
     <div class="result-stat">
-      <div class="result-val" id="r-avg" style="color:#00d4ff">—</div>
+      <div class="result-val" id="r-avg" style="color:#00d4ff"></div>
       <div class="result-label">Avg AI Rating /10</div>
     </div>
     <div class="result-stat">
-      <div class="result-val" id="r-faster" style="color:#ffaa00">—</div>
+      <div class="result-val" id="r-faster" style="color:#ffaa00"></div>
       <div class="result-label">Said AI Was Faster</div>
     </div>
   </div>
@@ -1447,14 +1447,14 @@
 
 </div>
 
-<!-- ══════════════════════════════
+<!-- 
      JAVASCRIPT
-══════════════════════════════════ -->
+ -->
 <script>
 
-// ─────────────────────────────────────
-// DATA — your real dissertation results
-// ─────────────────────────────────────
+// 
+// DATA  your real dissertation results
+// 
 const ATTACKS = [
   { name:'BOLA',           owasp:'API1:2023', count:0, sev:'HIGH',     sevClass:'sev-high',     spl:'index=api_logs "community/posts/recent" | stats count | where count > 5' },
   { name:'Brute Force',    owasp:'API2:2023', count:0, sev:'CRITICAL', sevClass:'sev-critical', spl:'index=api_logs "auth/login" | stats count | where count > 5' },
@@ -1464,7 +1464,7 @@ const ATTACKS = [
   { name:'Inventory',      owasp:'API9:2023', count:0, sev:'MEDIUM',   sevClass:'sev-medium',   spl:'index=api_logs "/api/v1/" | stats count | where count > 0' },
 ];
 
-// Live counters — updated by real SSE stream results
+// Live counters  updated by real SSE stream results
 const liveCounts = { 'BOLA':0, 'Brute Force':0, 'Rate Limiting':0, 'User Enum':0, 'Obj Property':0, 'Inventory':0 };
 
 function updateAttackCounter(attackName, count) {
@@ -1474,37 +1474,40 @@ function updateAttackCounter(attackName, count) {
 }
 
 const ALERT_TEMPLATES = [
-  { sev:'CRITICAL', cls:'sev-critical', title:'Brute force — 256 login attempts', meta:'172.18.0.1 → /identity/api/auth/login' },
-  { sev:'HIGH',     cls:'sev-high',     title:'BOLA attack — data exposed',       meta:'172.18.0.1 → /community/posts/recent' },
-  { sev:'HIGH',     cls:'sev-high',     title:'Rate limiting violation',           meta:'172.18.0.1 → 100 req/min on dashboard' },
-  { sev:'HIGH',     cls:'sev-high',     title:'User enumeration detected',         meta:'172.18.0.1 → /user/1-30/videos probed' },
-  { sev:'MEDIUM',   cls:'sev-medium',   title:'Deprecated API v1 accessed',       meta:'172.18.0.1 → /api/v1/ endpoints' },
+  { sev:'CRITICAL', cls:'sev-critical', title:'Brute force  256 login attempts', meta:'172.18.0.1  /identity/api/auth/login' },
+  { sev:'HIGH',     cls:'sev-high',     title:'BOLA attack  data exposed',       meta:'172.18.0.1  /community/posts/recent' },
+  { sev:'HIGH',     cls:'sev-high',     title:'Rate limiting violation',           meta:'172.18.0.1  100 req/min on dashboard' },
+  { sev:'HIGH',     cls:'sev-high',     title:'User enumeration detected',         meta:'172.18.0.1  /user/1-30/videos probed' },
+  { sev:'MEDIUM',   cls:'sev-medium',   title:'Deprecated API v1 accessed',       meta:'172.18.0.1  /api/v1/ endpoints' },
   { sev:'MEDIUM',   cls:'sev-medium',   title:'Sensitive field exposure',         meta:'credit_balance, video_url returned' },
 ];
 
 const TRIAGE_DATA = [];
 
-// Live triage — updated by real Ollama responses
+// Live triage  updated by real Ollama responses
 let liveTriage = {
-  sev: '—', type: '—', conf: '—',
-  action: 'No attacks run yet', esc: '—',
-  fp: '—', reasoning: 'Run an attack to see real AI triage output'
+  sev: '', type: '', conf: '',
+  action: 'No attacks run yet', esc: '',
+  fp: '', reasoning: 'Run an attack to see real AI triage output'
 };
 
 function updateTriagePanel(attackName, owasp, result) {
   liveTriage = {
     sev: result.severity || 'HIGH',
-    type: attackName + ' — ' + owasp,
-    conf: result.confidence || '—',
-    action: result.action || '—',
-    esc: result.escalate || '—',
+    type: attackName + '  ' + owasp,
+    conf: result.confidence || '',
+    action: result.action || '',
+    esc: result.escalate || '',
     fp: 'Medium',
     reasoning: result.reasoning || 'Real-time AI analysis via Llama 3.2 (Ollama)'
   };
   document.getElementById('t-sev').textContent = liveTriage.sev;
+  document.getElementById('t-type').textContent = liveTriage.type;
   document.getElementById('t-conf').textContent = liveTriage.conf;
   document.getElementById('t-action').textContent = liveTriage.action;
   document.getElementById('t-esc').textContent = liveTriage.esc;
+  document.getElementById('t-fp').textContent = liveTriage.fp;
+  document.getElementById('t-reasoning').textContent = liveTriage.reasoning;
   // Update full triage panel if visible
   const panel = document.querySelector('.triage-output');
   if (panel) {
@@ -1537,7 +1540,7 @@ const EVAL_ALERTS = [
       'Source IP':      '172.18.0.1',
       'Endpoint':       '/community/api/v2/community/posts/recent',
       'Request Count':  '370 requests in 4 minutes',
-      'Response Code':  '200 OK — data returned each time',
+      'Response Code':  '200 OK  data returned each time',
       'Data Exposed':   '3 other users emails and vehicle IDs',
       'Tool Used':      'curl/8.5.0 (automated)',
       'Time':           '03:52 AM',
@@ -1550,7 +1553,7 @@ const EVAL_ALERTS = [
       'Source IP':    '172.18.0.1',
       'Endpoint':     '/identity/api/v2/user/dashboard',
       'Request Count':'100 requests per minute',
-      'Response Code':'200 OK — no throttling',
+      'Response Code':'200 OK  no throttling',
       'Normal Rate':  '2-5 requests per session',
       'Duration':     '2 minutes sustained',
       'Time':         '04:00 AM',
@@ -1572,9 +1575,9 @@ const EVAL_ALERTS = [
   },
 ];
 
-// ─────────────────────────────────────
+// 
 // STATE
-// ─────────────────────────────────────
+// 
 let alertCount = 0;
 let totalRequests = 0;
 let triageIndex = 0;
@@ -1590,9 +1593,9 @@ try {
   allResponses = JSON.parse(localStorage.getItem('cs_eval') || '[]');
 } catch(e) {}
 
-// ─────────────────────────────────────
+// 
 // NAV
-// ─────────────────────────────────────
+// 
 function showPage(name, tab) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1603,18 +1606,18 @@ function showPage(name, tab) {
   if (name === 'detection') buildDetection();
 }
 
-// ─────────────────────────────────────
+// 
 // CLOCK
-// ─────────────────────────────────────
+// 
 function updateClock() {
   document.getElementById('clock').textContent =
     new Date().toLocaleTimeString('en-GB', {hour12:false});
 }
 
-// ─────────────────────────────────────
+// 
 // NUMBER ANIMATION
 // Counts from 0 to target over duration
-// ─────────────────────────────────────
+// 
 function animateNum(id, target, duration, suffix) {
   const el = document.getElementById(id);
   const start = Date.now();
@@ -1629,9 +1632,9 @@ function animateNum(id, target, duration, suffix) {
   tick();
 }
 
-// ─────────────────────────────────────
-// ALERT FEED — adds alerts every few seconds
-// ─────────────────────────────────────
+// 
+// ALERT FEED  adds alerts every few seconds
+// 
 function addAlert() {
   const feed = document.getElementById('alert-feed');
   const t = ALERT_TEMPLATES[alertCount % ALERT_TEMPLATES.length];
@@ -1664,18 +1667,18 @@ function addAlert() {
   }
 }
 
-// ─────────────────────────────────────
-// LIVE COUNTER — ticks up total requests
-// ─────────────────────────────────────
+// 
+// LIVE COUNTER  ticks up total requests
+// 
 function tickRequests() {
   totalRequests += Math.floor(Math.random() * 5) + 1;
   document.getElementById('live-count').textContent = totalRequests.toLocaleString();
   document.getElementById('m-attacks').textContent = totalRequests;
 }
 
-// ─────────────────────────────────────
-// TRIAGE ROTATION — cycles through attacks
-// ─────────────────────────────────────
+// 
+// TRIAGE ROTATION  cycles through attacks
+// 
 function rotateTriage() {
   const t = TRIAGE_DATA[triageIndex % TRIAGE_DATA.length];
   document.getElementById('t-sev').textContent = t.sev;
@@ -1689,9 +1692,9 @@ function rotateTriage() {
   triageIndex++;
 }
 
-// ─────────────────────────────────────
+// 
 // DETECTION TABLE
-// ─────────────────────────────────────
+// 
 function buildDetection() {
   const tbody = document.getElementById('detection-table-body');
   if (tbody.children.length > 0) return; // already built
@@ -1710,7 +1713,7 @@ function buildDetection() {
       <td style="font-size:10px;color:#4a7090;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.spl}</td>
       <td style="color:#00ff88">${a.count}</td>
       <td><span class="sev-badge" style="${sevStyle};padding:2px 8px;border-radius:3px;font-size:10px">${a.sev}</span></td>
-      <td style="color:#00ff88;font-size:11px">✓ DETECTED</td>
+      <td style="color:#00ff88;font-size:11px"> DETECTED</td>
     `;
     tbody.appendChild(tr);
   });
@@ -1734,9 +1737,9 @@ function buildDetection() {
   });
 }
 
-// ─────────────────────────────────────
+// 
 // EVALUATION LOGIC
-// ─────────────────────────────────────
+// 
 function startEval() {
   const name = document.getElementById('participant-name').value.trim();
   if (!name) { alert('Please enter your name or participant ID'); return; }
@@ -1777,7 +1780,7 @@ function showAlert(idx) {
     <div class="eval-card">
       <div class="eval-card-head">
         Alert ${idx+1} of ${EVAL_ALERTS.length}: ${a.title}
-        <span style="font-size:10px;color:#ff6688;letter-spacing:1px">PHASE A — YOUR ASSESSMENT</span>
+        <span style="font-size:10px;color:#ff6688;letter-spacing:1px">PHASE A  YOUR ASSESSMENT</span>
       </div>
       <div class="eval-card-body">
 
@@ -1816,12 +1819,12 @@ function showAlert(idx) {
             <div class="choice" onclick="pickChoice(this,'qa-action')">Monitor only</div>
             <div class="choice" onclick="pickChoice(this,'qa-action')">Block source IP</div>
             <div class="choice" onclick="pickChoice(this,'qa-action')">Escalate to Tier 2</div>
-            <div class="choice" onclick="pickChoice(this,'qa-action')">Ignore — false positive</div>
+            <div class="choice" onclick="pickChoice(this,'qa-action')">Ignore  false positive</div>
           </div>
         </div>
 
         <div style="text-align:center;margin-top:20px">
-          <button class="btn-primary" onclick="revealAI(${idx})">SEE AI ANALYSIS →</button>
+          <button class="btn-primary" onclick="revealAI(${idx})">SEE AI ANALYSIS </button>
         </div>
       </div>
     </div>
@@ -1871,14 +1874,14 @@ function revealAI(idx) {
   aiCard.innerHTML = `
     <div class="eval-card-head" style="background:rgba(0,212,255,0.05)">
       AI Triage Analysis
-      <span style="font-size:10px;color:#00d4ff;letter-spacing:1px">PHASE B — REVIEW AI OUTPUT</span>
+      <span style="font-size:10px;color:#00d4ff;letter-spacing:1px">PHASE B  REVIEW AI OUTPUT</span>
     </div>
     <div class="eval-card-body">
 
       <div class="ai-reveal-box">
         <div class="ai-reveal-title">
           <div class="ai-dot">AI</div>
-          LLaMA 3.2 — Automated SOC Triage
+          LLaMA 3.2  Automated SOC Triage
         </div>
         <div class="triage-row"><span class="triage-key">SEVERITY:</span><span class="triage-val" style="${sevStyle}">${ai.sev}</span></div>
         <div class="triage-row"><span class="triage-key">ATTACK_TYPE:</span><span class="triage-val">${ai.type}</span></div>
@@ -1901,10 +1904,10 @@ function revealAI(idx) {
       <div class="question-group">
         <div class="question-label">Did AI change your assessment?</div>
         <div class="choices" id="qb-change-${idx}">
-          <div class="choice" onclick="pickChoice(this,'qb-change-${idx}')">Yes — changed severity</div>
-          <div class="choice" onclick="pickChoice(this,'qb-change-${idx}')">Yes — changed action</div>
-          <div class="choice" onclick="pickChoice(this,'qb-change-${idx}')">No — AI confirmed mine</div>
-          <div class="choice" onclick="pickChoice(this,'qb-change-${idx}')">No — I disagree with AI</div>
+          <div class="choice" onclick="pickChoice(this,'qb-change-${idx}')">Yes  changed severity</div>
+          <div class="choice" onclick="pickChoice(this,'qb-change-${idx}')">Yes  changed action</div>
+          <div class="choice" onclick="pickChoice(this,'qb-change-${idx}')">No  AI confirmed mine</div>
+          <div class="choice" onclick="pickChoice(this,'qb-change-${idx}')">No  I disagree with AI</div>
         </div>
       </div>
 
@@ -1923,7 +1926,7 @@ function revealAI(idx) {
   area.appendChild(aiCard);
   aiCard.scrollIntoView({ behavior:'smooth' });
   document.getElementById('next-btn').textContent =
-    idx < EVAL_ALERTS.length - 1 ? 'NEXT ALERT →' : 'FINISH →';
+    idx < EVAL_ALERTS.length - 1 ? 'NEXT ALERT ' : 'FINISH ';
 }
 
 function nextAlert() {
@@ -1974,9 +1977,9 @@ function submitEval() {
   updateResults();
 }
 
-// ─────────────────────────────────────
+// 
 // RESULTS
-// ─────────────────────────────────────
+// 
 function updateResults() {
   const data = allResponses;
   document.getElementById('r-count').textContent = data.length;
@@ -2024,9 +2027,9 @@ function updateResults() {
   `).join('');
 }
 
-// ─────────────────────────────────────
+// 
 // EXPORT
-// ─────────────────────────────────────
+// 
 function exportCSV() {
   if (allResponses.length === 0) { alert('No data to export'); return; }
   const headers = ['participant','timestamp','overall_rating','speed_impact','trust_ai','experience','suggestions','feedback'];
@@ -2051,9 +2054,9 @@ function download(content, filename, type) {
   a.click();
 }
 
-// ─────────────────────────────────────
+// 
 // SELECTION HELPERS
-// ─────────────────────────────────────
+// 
 function pickChoice(el, groupId) {
   document.querySelectorAll('#' + groupId + ' .choice').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
@@ -2075,39 +2078,39 @@ function startHackerTerminal() {
     { text: '[INFO] Target: http://localhost:8888 (crAPI)', color: '#4a7090', delay: 1400 },
     { text: '[INFO] Splunk monitoring: http://localhost:8000', color: '#4a7090', delay: 1900 },
     { text: '', color: '#000', delay: 2300 },
-    { text: '[ATTACK 1] BOLA — Broken Object Level Authorisation', color: '#ffaa00', delay: 2700 },
-    { text: '  → GET /community/api/v2/community/posts/recent', color: '#00d4ff', delay: 3100 },
-    { text: '  → [REQ 001] 200 OK — exposed: robot001@example.com', color: '#ff6688', delay: 3500 },
-    { text: '  → [REQ 002] 200 OK — exposed: pogba006@example.com', color: '#ff6688', delay: 3900 },
-    { text: '  → [REQ 003] 200 OK — exposed: adam007@example.com', color: '#ff6688', delay: 4300 },
-    { text: '  → [REQ 004-370] 200 OK — repeated unauthorised access...', color: '#ff6688', delay: 4700 },
-    { text: '  ✓ BOLA complete: 370 requests, 3 users data exposed', color: '#00ff88', delay: 5200 },
+    { text: '[ATTACK 1] BOLA  Broken Object Level Authorisation', color: '#ffaa00', delay: 2700 },
+    { text: '   GET /community/api/v2/community/posts/recent', color: '#00d4ff', delay: 3100 },
+    { text: '   [REQ 001] 200 OK  exposed: robot001@example.com', color: '#ff6688', delay: 3500 },
+    { text: '   [REQ 002] 200 OK  exposed: pogba006@example.com', color: '#ff6688', delay: 3900 },
+    { text: '   [REQ 003] 200 OK  exposed: adam007@example.com', color: '#ff6688', delay: 4300 },
+    { text: '   [REQ 004-370] 200 OK  repeated unauthorised access...', color: '#ff6688', delay: 4700 },
+    { text: '   BOLA complete: 370 requests, 3 users data exposed', color: '#00ff88', delay: 5200 },
     { text: '', color: '#000', delay: 5600 },
-    { text: '[ATTACK 2] Broken Authentication — Brute Force', color: '#ffaa00', delay: 6000 },
-    { text: '  → POST /identity/api/auth/login', color: '#00d4ff', delay: 6400 },
-    { text: '  → [TRY 001] wrongpassword1 → 401 Unauthorised', color: '#ff3366', delay: 6800 },
-    { text: '  → [TRY 002] wrongpassword2 → 401 Unauthorised', color: '#ff3366', delay: 7100 },
-    { text: '  → No account lockout after 256 attempts!', color: '#ff0044', delay: 7500 },
-    { text: '  ✓ Brute Force: vulnerability confirmed', color: '#00ff88', delay: 7900 },
+    { text: '[ATTACK 2] Broken Authentication  Brute Force', color: '#ffaa00', delay: 6000 },
+    { text: '   POST /identity/api/auth/login', color: '#00d4ff', delay: 6400 },
+    { text: '   [TRY 001] wrongpassword1  401 Unauthorised', color: '#ff3366', delay: 6800 },
+    { text: '   [TRY 002] wrongpassword2  401 Unauthorised', color: '#ff3366', delay: 7100 },
+    { text: '   No account lockout after 256 attempts!', color: '#ff0044', delay: 7500 },
+    { text: '   Brute Force: vulnerability confirmed', color: '#00ff88', delay: 7900 },
     { text: '', color: '#000', delay: 8300 },
-    { text: '[ATTACK 3] Rate Limiting Abuse — API4:2023', color: '#ffaa00', delay: 8700 },
-    { text: '  → 100 requests/min to /user/dashboard — no throttle', color: '#ff6688', delay: 9100 },
-    { text: '  ✓ Rate limit abuse confirmed', color: '#00ff88', delay: 9500 },
+    { text: '[ATTACK 3] Rate Limiting Abuse  API4:2023', color: '#ffaa00', delay: 8700 },
+    { text: '   100 requests/min to /user/dashboard  no throttle', color: '#ff6688', delay: 9100 },
+    { text: '   Rate limit abuse confirmed', color: '#00ff88', delay: 9500 },
     { text: '', color: '#000', delay: 9900 },
-    { text: '[ATTACK 4] User Enumeration — probing IDs 1-30', color: '#ffaa00', delay: 10300 },
-    { text: '  → GET /identity/api/v2/user/1/videos → 404', color: '#4a7090', delay: 10700 },
-    { text: '  → GET /identity/api/v2/user/2/videos → 404', color: '#4a7090', delay: 11000 },
-    { text: '  → GET /identity/api/v2/user/3/videos → 404', color: '#4a7090', delay: 11300 },
-    { text: '  ✓ Enumeration complete: 30 IDs probed', color: '#00ff88', delay: 11700 },
+    { text: '[ATTACK 4] User Enumeration  probing IDs 1-30', color: '#ffaa00', delay: 10300 },
+    { text: '   GET /identity/api/v2/user/1/videos  404', color: '#4a7090', delay: 10700 },
+    { text: '   GET /identity/api/v2/user/2/videos  404', color: '#4a7090', delay: 11000 },
+    { text: '   GET /identity/api/v2/user/3/videos  404', color: '#4a7090', delay: 11300 },
+    { text: '   Enumeration complete: 30 IDs probed', color: '#00ff88', delay: 11700 },
     { text: '', color: '#000', delay: 12100 },
-    { text: '[SPLUNK] Detection rules triggered — 4 alerts generated', color: '#00d4ff', delay: 12500 },
+    { text: '[SPLUNK] Detection rules triggered  4 alerts generated', color: '#00d4ff', delay: 12500 },
     { text: '[AI] Sending to llama3.2 via Ollama for triage...', color: '#00d4ff', delay: 13000 },
     { text: '[AI] SEVERITY: HIGH | ATTACK: BOLA | CONFIDENCE: 80%', color: '#ffaa00', delay: 13600 },
     { text: '[AI] ACTION: Block IP immediately | ESCALATE: YES', color: '#ffaa00', delay: 14100 },
     { text: '', color: '#000', delay: 14500 },
-    { text: '[SAVED] Results → ~/mscproject/experiments/', color: '#00ff88', delay: 14900 },
+    { text: '[SAVED] Results  ~/mscproject/experiments/', color: '#00ff88', delay: 14900 },
     { text: '[DONE] All attacks complete. Dashboard updated.', color: '#00ff88', delay: 15400 },
-    { text: 'akash@glasgow:~$ █', color: '#00ff88', delay: 15900 },
+    { text: 'akash@glasgow:~$ ', color: '#00ff88', delay: 15900 },
   ];
   lines.forEach(line => {
     setTimeout(() => {
@@ -2146,16 +2149,16 @@ async function doLogin() {
       document.getElementById('conn-status').style.color = '#00ff88';
       document.getElementById('login-password').value = '';
       document.getElementById('launch-mode').textContent = 'LIVE MODE';
-      addTermLine('[CONNECTED] crAPI authenticated — real attacks enabled', 'term-success');
+      addTermLine('[CONNECTED] crAPI authenticated  real attacks enabled', 'term-success');
     } else {
       document.getElementById('conn-status').textContent = 'LOGIN FAILED';
       document.getElementById('conn-status').style.color = '#ff4444';
       document.getElementById('login-password').value = '';
-      addTermLine('[ERROR] Wrong email or password — try again', 'term-warn');
+      addTermLine('[ERROR] Wrong email or password  try again', 'term-warn');
     }
   } catch(e) {
     document.getElementById('conn-status').textContent = 'SERVER OFFLINE';
-    addTermLine('[WARN] Attack server offline — check python3 attack_server.py', 'term-warn');
+    addTermLine('[WARN] Attack server offline  check python3 attack_server.py', 'term-warn');
   }
 }
 
@@ -2173,11 +2176,11 @@ function addTermLine(text, cls) {
   terminal.scrollTop = terminal.scrollHeight;
 }
 
-// ─────────────────────────────────────
+// 
 // MATRIX RAIN ANIMATION
-// ─────────────────────────────────────
+// 
 function startMatrixRain() {
-  const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノ";
+  const chars = "01";
   const columns = Math.floor(window.innerWidth / 20);
   
   for (let i = 0; i < 15; i++) {
@@ -2199,9 +2202,9 @@ function startMatrixRain() {
   }
 }
 
-// ─────────────────────────────────────
+// 
 // LIVE ATTACK SIMULATION
-// ─────────────────────────────────────
+// 
 let attackRunning = false;
 let attackInterval = null;
 
@@ -2262,7 +2265,7 @@ function launchAttack(attackName, owasp, count) {
         const line = document.createElement('div');
         line.style.color = data.status === 200 ? '#ff6688' : '#4a7090';
         line.textContent = '[REQ ' + String(sent).padStart(3,'0') + '] ' +
-          attackName + ' → ' + data.status + ' (' + owasp + ')';
+          attackName + '  ' + data.status + ' (' + owasp + ')';
         terminal.appendChild(line);
         terminal.scrollTop = terminal.scrollHeight;
       }
@@ -2280,19 +2283,12 @@ function launchAttack(attackName, owasp, count) {
 
     if (data.phase === 'triage') {
       const t = data.result;
-      document.getElementById('t-sev').textContent = t.severity || 'HIGH';
-      document.getElementById('t-conf').textContent = t.confidence || '70%';
-      document.getElementById('t-action').textContent = t.action || 'Investigate';
-      document.getElementById('t-esc').textContent = t.escalate || 'YES';
-      // Switch to AI triage tab automatically
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      const tp = document.getElementById('page-triage');
-      if (tp) tp.classList.add('active');
+      updateTriagePanel(attackName, owasp, t);
       if (terminal) {
         const line = document.createElement('div');
         line.style.color = '#22d3c8';
-        line.textContent = '[AI] ' + t.severity + ' | ' + t.confidence + ' | ' + t.action;
+        const cleanAction = (t.action || 'Investigate').replace(/[\x00-\x1F\x7F]/g, '').substring(0, 80);
+        line.textContent = '[AI] ' + (t.severity||'HIGH') + ' | ' + (t.confidence||'') + ' | ' + cleanAction;
         terminal.appendChild(line);
         terminal.scrollTop = terminal.scrollHeight;
       }
@@ -2372,12 +2368,12 @@ function showTriageResult(attackName, owasp) {
   rotateTriage();
 }
 
-// ─────────────────────────────────────
-// BOOT — runs when page loads
-// ─────────────────────────────────────
+// 
+// BOOT  runs when page loads
+// 
 window.addEventListener('load', () => {
 
-  // Clock only — everything else starts empty
+  // Clock only  everything else starts empty
   updateClock();
   setInterval(updateClock, 1000);
 
@@ -2388,7 +2384,7 @@ window.addEventListener('load', () => {
   if (document.getElementById('login-email')) document.getElementById('login-email').value = '';
   if (document.getElementById('login-password')) document.getElementById('login-password').value = '';
 
-  // Start at zero — real data comes from live attacks
+  // Start at zero  real data comes from live attacks
   totalRequests = 0;
   document.getElementById('live-count').textContent = '0';
   document.getElementById('m-attacks').textContent = '0';
@@ -2397,7 +2393,7 @@ window.addEventListener('load', () => {
 
   // Clear the alert feed
   const feed = document.getElementById('alert-feed');
-  if (feed) feed.innerHTML = '<div style="color:#4a7090;font-size:12px;padding:20px;text-align:center;font-family:monospace;">[ No alerts yet — launch an attack to begin ]</div>';
+  if (feed) feed.innerHTML = '<div style="color:#4a7090;font-size:12px;padding:20px;text-align:center;font-family:monospace;">[ No alerts yet  launch an attack to begin ]</div>';
 
   // Clear the terminal
   const terminal = document.getElementById('hacker-terminal');
@@ -2408,10 +2404,10 @@ window.addEventListener('load', () => {
   const tconf = document.getElementById('t-conf');
   const taction = document.getElementById('t-action');
   const tesc = document.getElementById('t-esc');
-  if (tsev) tsev.textContent = '—';
-  if (tconf) tconf.textContent = '—';
+  if (tsev) tsev.textContent = '';
+  if (tconf) tconf.textContent = '';
   if (taction) taction.textContent = 'No alerts yet';
-  if (tesc) tesc.textContent = '—';
+  if (tesc) tesc.textContent = '';
 
 });
 
