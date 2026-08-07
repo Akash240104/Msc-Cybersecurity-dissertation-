@@ -1026,19 +1026,19 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
           <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px">
             <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:4px">BOLA</div>
-            <div style="font-family:monospace;font-size:20px;color:#ff6688" id="c-bola">370</div>
+            <div style="font-family:monospace;font-size:20px;color:#ff6688" id="c-bola">0</div>
           </div>
           <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px">
             <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:4px">BRUTE FORCE</div>
-            <div style="font-family:monospace;font-size:20px;color:#ff0044" id="c-brute">256</div>
+            <div style="font-family:monospace;font-size:20px;color:#ff0044" id="c-brute">0</div>
           </div>
           <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px">
             <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:4px">RATE LIMIT</div>
-            <div style="font-family:monospace;font-size:20px;color:#ffaa00" id="c-rate">200</div>
+            <div style="font-family:monospace;font-size:20px;color:#ffaa00" id="c-rate">0</div>
           </div>
           <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px">
             <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:4px">USER ENUM</div>
-            <div style="font-family:monospace;font-size:20px;color:#00d4ff" id="c-enum">105</div>
+            <div style="font-family:monospace;font-size:20px;color:#00d4ff" id="c-enum">0</div>
           </div>
         </div>
       </div>
@@ -1072,14 +1072,19 @@
             <div class="panel-title">crAPI Connection</div>
             <div class="panel-badge" id="conn-status">DISCONNECTED</div>
           </div>
-          <div class="panel-body" style="display:flex;gap:10px;align-items:center">
-            <input type="text" id="token-input" 
-              placeholder="Paste your crAPI Bearer token here..."
-              style="flex:1;background:#020810;border:1px solid #0d2040;border-radius:4px;padding:10px;color:#c8e0f0;font-family:monospace;font-size:11px;outline:none">
-            <button onclick="setToken()" 
-              style="background:#00d4ff;color:#000;border:none;padding:10px 20px;border-radius:4px;font-family:monospace;font-weight:bold;cursor:pointer">
-              CONNECT
-            </button>
+          <div class="panel-body" style="display:flex;flex-direction:column;gap:8px">
+            <input type="email" id="login-email"
+              placeholder="crAPI email address"
+              style="background:#020810;border:1px solid #0d2040;border-radius:4px;padding:10px;color:#c8e0f0;font-family:monospace;font-size:12px;outline:none">
+            <div style="display:flex;gap:8px">
+              <input type="password" id="login-password"
+                placeholder="password"
+                style="flex:1;background:#020810;border:1px solid #0d2040;border-radius:4px;padding:10px;color:#c8e0f0;font-family:monospace;font-size:12px;outline:none">
+              <button onclick="doLogin()"
+                style="background:#00d4ff;color:#000;border:none;padding:10px 20px;border-radius:4px;font-family:monospace;font-weight:bold;cursor:pointer;white-space:nowrap">
+                CONNECT
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1087,7 +1092,7 @@
         <div class="panel" style="margin-top:15px">
           <div class="panel-header">
             <div class="panel-title">Attack Launcher</div>
-            <div class="panel-badge">SIMULATION MODE</div>
+            <div class="panel-badge" id="launch-mode">SIMULATION MODE</div>
           </div>
           <div class="panel-body">
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
@@ -1448,13 +1453,22 @@
 // DATA — your real dissertation results
 // ─────────────────────────────────────
 const ATTACKS = [
-  { name:'BOLA',           owasp:'API1:2023', count:370, sev:'HIGH',     sevClass:'sev-high',     spl:'index=api_logs "community/posts/recent" | stats count | where count > 5' },
-  { name:'Brute Force',    owasp:'API2:2023', count:256, sev:'CRITICAL', sevClass:'sev-critical', spl:'index=api_logs "auth/login" | stats count | where count > 5' },
-  { name:'Rate Limiting',  owasp:'API4:2023', count:200, sev:'HIGH',     sevClass:'sev-high',     spl:'index=api_logs "dashboard" | bucket span=1m | stats count | where count > 10' },
-  { name:'User Enum',      owasp:'API1:2023', count:105, sev:'HIGH',     sevClass:'sev-high',     spl:'index=api_logs "user/" "404" | stats dc(user_id) | where unique > 5' },
-  { name:'Obj Property',   owasp:'API3:2023', count:48,  sev:'MEDIUM',   sevClass:'sev-medium',   spl:'index=api_logs "dashboard" | rex "video_url|credit" | stats count' },
-  { name:'Inventory',      owasp:'API9:2023', count:12,  sev:'MEDIUM',   sevClass:'sev-medium',   spl:'index=api_logs "/api/v1/" | stats count | where count > 0' },
+  { name:'BOLA',           owasp:'API1:2023', count:0, sev:'HIGH',     sevClass:'sev-high',     spl:'index=api_logs "community/posts/recent" | stats count | where count > 5' },
+  { name:'Brute Force',    owasp:'API2:2023', count:0, sev:'CRITICAL', sevClass:'sev-critical', spl:'index=api_logs "auth/login" | stats count | where count > 5' },
+  { name:'Rate Limiting',  owasp:'API4:2023', count:0, sev:'HIGH',     sevClass:'sev-high',     spl:'index=api_logs "dashboard" | bucket span=1m | stats count | where count > 10' },
+  { name:'User Enum',      owasp:'API1:2023', count:0, sev:'HIGH',     sevClass:'sev-high',     spl:'index=api_logs "user/" "404" | stats dc(user_id) | where unique > 5' },
+  { name:'Obj Property',   owasp:'API3:2023', count:0, sev:'MEDIUM',   sevClass:'sev-medium',   spl:'index=api_logs "dashboard" | rex "video_url|credit" | stats count' },
+  { name:'Inventory',      owasp:'API9:2023', count:0, sev:'MEDIUM',   sevClass:'sev-medium',   spl:'index=api_logs "/api/v1/" | stats count | where count > 0' },
 ];
+
+// Live counters — updated by real SSE stream results
+const liveCounts = { 'BOLA':0, 'Brute Force':0, 'Rate Limiting':0, 'User Enum':0, 'Obj Property':0, 'Inventory':0 };
+
+function updateAttackCounter(attackName, count) {
+  liveCounts[attackName] = (liveCounts[attackName] || 0) + count;
+  ATTACKS.forEach(a => { if (a.name === attackName) a.count = liveCounts[attackName]; });
+  buildDetection();
+}
 
 const ALERT_TEMPLATES = [
   { sev:'CRITICAL', cls:'sev-critical', title:'Brute force — 256 login attempts', meta:'172.18.0.1 → /identity/api/auth/login' },
@@ -1465,12 +1479,40 @@ const ALERT_TEMPLATES = [
   { sev:'MEDIUM',   cls:'sev-medium',   title:'Sensitive field exposure',         meta:'credit_balance, video_url returned' },
 ];
 
-const TRIAGE_DATA = [
-  { sev:'CRITICAL', sevC:'critical', type:'Brute Force — API2:2023',    conf:'92%', action:'Block IP · Reset credentials',     esc:'YES → Tier 2', fp:'Low',    reasoning:'256 POST requests to login endpoint with sequential password variations. No account lockout detected. High confidence brute force attack in progress.' },
-  { sev:'HIGH',     sevC:'high',     type:'BOLA — API1:2023',           conf:'80%', action:'Block IP · Review exposed accounts', esc:'YES → Tier 2', fp:'Medium', reasoning:'370 requests to community endpoint returning other users data. Single authenticated token accessing multiple user objects. Classic BOLA pattern.' },
-  { sev:'HIGH',     sevC:'high',     type:'Rate Limiting — API4:2023',  conf:'85%', action:'Implement rate limit · Monitor',    esc:'YES → Tier 2', fp:'Low',    reasoning:'100 requests per minute exceeds normal usage by 20x. No throttling enforcement detected. Off-hours automated tool signature.' },
-  { sev:'HIGH',     sevC:'high',     type:'User Enum — API1:2023',      conf:'75%', action:'Monitor IP · Log enumeration',      esc:'YES',          fp:'Low',    reasoning:'Sequential probing of 30 user IDs indicates reconnaissance. Precursor to targeted BOLA attack. Attacker mapping valid accounts.' },
-];
+const TRIAGE_DATA = [];
+
+// Live triage — updated by real Ollama responses
+let liveTriage = {
+  sev: '—', type: '—', conf: '—',
+  action: 'No attacks run yet', esc: '—',
+  fp: '—', reasoning: 'Run an attack to see real AI triage output'
+};
+
+function updateTriagePanel(attackName, owasp, result) {
+  liveTriage = {
+    sev: result.severity || 'HIGH',
+    type: attackName + ' — ' + owasp,
+    conf: result.confidence || '—',
+    action: result.action || '—',
+    esc: result.escalate || '—',
+    fp: 'Medium',
+    reasoning: result.reasoning || 'Real-time AI analysis via Llama 3.2 (Ollama)'
+  };
+  document.getElementById('t-sev').textContent = liveTriage.sev;
+  document.getElementById('t-conf').textContent = liveTriage.conf;
+  document.getElementById('t-action').textContent = liveTriage.action;
+  document.getElementById('t-esc').textContent = liveTriage.esc;
+  // Update full triage panel if visible
+  const panel = document.querySelector('.triage-output');
+  if (panel) {
+    panel.querySelector && document.querySelectorAll('.triage-val').forEach((el, i) => {
+      const vals = [liveTriage.sev, liveTriage.type, liveTriage.conf, liveTriage.action, liveTriage.esc, liveTriage.fp];
+      if (vals[i]) el.textContent = vals[i];
+    });
+    const reasoning = document.querySelector('.triage-reasoning');
+    if (reasoning) reasoning.textContent = liveTriage.reasoning;
+  }
+}
 
 const EVAL_ALERTS = [
   {
@@ -2082,6 +2124,37 @@ function startHackerTerminal() {
 
 
 // Set token for real attacks
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value.trim();
+  if (!email || !password) { alert('Enter email and password'); return; }
+  document.getElementById('conn-status').textContent = 'CONNECTING...';
+  try {
+    const r = await fetch('http://localhost:5000/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email: email, password: password})
+    });
+    const data = await r.json();
+    if (data.status === 'ok') {
+      window.crapi_token = data.token || '';
+      console.log('[DEBUG] token stored:', window.crapi_token.substring(0,20) + '...');
+      document.getElementById('conn-status').textContent = 'CONNECTED';
+      document.getElementById('conn-status').style.color = '#00ff88';
+      document.getElementById('login-password').value = '';
+      document.getElementById('launch-mode').textContent = 'LIVE MODE';
+      addTermLine('[CONNECTED] crAPI authenticated — real attacks enabled', 'term-success');
+    } else {
+      document.getElementById('conn-status').textContent = 'LOGIN FAILED';
+      document.getElementById('conn-status').style.color = '#ff4444';
+      addTermLine('[ERROR] Login failed: ' + data.message, 'term-warn');
+    }
+  } catch(e) {
+    document.getElementById('conn-status').textContent = 'SERVER OFFLINE';
+    addTermLine('[WARN] Attack server offline — check python3 attack_server.py', 'term-warn');
+  }
+}
+
 async function setToken() {
   const token = document.getElementById('token-input').value.trim();
   if (!token) { alert('Please paste your Bearer token'); return; }
@@ -2174,44 +2247,83 @@ function launchAttack(attackName, owasp, count) {
   // Start matrix rain
   startMatrixRain();
 
+  const streamEndpoint = attackName === 'BOLA' ? 'bola' :
+    attackName === 'Brute Force' ? 'bruteforce' :
+    attackName === 'Rate Limit' ? 'ratelimit' : 'userenum';
+
+  const streamUrl = 'http://localhost:5000/attack/' + streamEndpoint +
+    '/stream?count=' + count + '&token=' + (window.crapi_token || '');
+
+  const es = new EventSource(streamUrl);
   let sent = 0;
   let success = 0;
 
-  attackInterval = setInterval(() => {
-    sent++;
-    if (Math.random() > 0.05) success++;
-
-    document.getElementById('ov-sent').textContent = sent;
-    document.getElementById('ov-success').textContent = success;
-    document.getElementById('ov-rate').textContent = 
-      (sent / (attackName === 'Rate Limiting' ? 0.1 : 1)).toFixed(0) + '/min';
-    
-    const pct = (sent / count * 100).toFixed(0);
-    document.getElementById('ov-progress').style.width = pct + '%';
-
-    // Add to terminal
+  es.onmessage = function(e) {
+    const data = JSON.parse(e.data);
     const terminal = document.getElementById('hacker-terminal');
-    if (terminal) {
-      const line = document.createElement('div');
-      line.style.color = success > sent * 0.8 ? '#ff6688' : '#4a7090';
-      line.textContent = '[REQ ' + String(sent).padStart(3,'0') + '] ' + 
-        attackName + ' → ' + (Math.random() > 0.05 ? '200 OK' : '403') + 
-        ' (' + owasp + ')';
-      terminal.appendChild(line);
-      terminal.scrollTop = terminal.scrollHeight;
+
+    if (data.phase === 'request') {
+      sent = data.num;
+      success = data.success;
+      document.getElementById('ov-sent').textContent = sent;
+      document.getElementById('ov-success').textContent = success;
+      document.getElementById('ov-rate').textContent = (sent * 2) + '/min';
+      const pct = (sent / count * 100).toFixed(0);
+      document.getElementById('ov-progress').style.width = pct + '%';
+      totalRequests++;
+      document.getElementById('live-count').textContent = totalRequests.toLocaleString();
+      if (terminal) {
+        const line = document.createElement('div');
+        line.style.color = data.status === 200 ? '#ff6688' : '#4a7090';
+        line.textContent = '[REQ ' + String(sent).padStart(3,'0') + '] ' +
+          attackName + ' → ' + data.status + ' (' + owasp + ')';
+        terminal.appendChild(line);
+        terminal.scrollTop = terminal.scrollHeight;
+      }
     }
 
-    // Update dashboard metrics
-    totalRequests++;
-    document.getElementById('live-count').textContent = 
-      totalRequests.toLocaleString();
-    document.getElementById('m-attacks').textContent = totalRequests;
+    if (data.phase === 'splunk') {
+      if (terminal) {
+        const line = document.createElement('div');
+        line.style.color = '#ffb020';
+        line.textContent = '[SPLUNK] Detected ' + data.detected + ' events in index=api_logs';
+        terminal.appendChild(line);
+        terminal.scrollTop = terminal.scrollHeight;
+      }
+    }
 
-    if (sent >= count) {
-      clearInterval(attackInterval);
+    if (data.phase === 'triage') {
+      const t = data.result;
+      document.getElementById('t-sev').textContent = t.severity || 'HIGH';
+      document.getElementById('t-conf').textContent = t.confidence || '70%';
+      document.getElementById('t-action').textContent = t.action || 'Investigate';
+      document.getElementById('t-esc').textContent = t.escalate || 'YES';
+      // Switch to AI triage tab automatically
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      const tp = document.getElementById('page-triage');
+      if (tp) tp.classList.add('active');
+      if (terminal) {
+        const line = document.createElement('div');
+        line.style.color = '#22d3c8';
+        line.textContent = '[AI] ' + t.severity + ' | ' + t.confidence + ' | ' + t.action;
+        terminal.appendChild(line);
+        terminal.scrollTop = terminal.scrollHeight;
+      }
+    }
+
+    if (data.phase === 'done') {
+      es.close();
+      updateAttackCounter(attackName, sent);
       finishAttack(attackName, owasp, sent, success);
     }
-  }, 100);
+  };
+
+  es.onerror = function() {
+    es.close();
+    addTermLine('[SIM] Server offline - running simulation mode', 'term-warn');
+    attackRunning = false;
+  };
 }
 
 function finishAttack(name, owasp, sent, success) {
@@ -2279,37 +2391,34 @@ function showTriageResult(attackName, owasp) {
 // ─────────────────────────────────────
 window.addEventListener('load', () => {
 
-  // Clock
+  // Clock only — everything else starts empty
   updateClock();
   setInterval(updateClock, 1000);
 
-  // Animate metrics
-  animateNum('m-attacks', 991, 2500);
-  animateNum('m-alerts',  4,   1500);
-  animateNum('m-rate',    100, 2500, '%');
-  animateNum('m-triaged', 6,   2000);
+  // Start at zero — real data comes from live attacks
+  totalRequests = 0;
+  document.getElementById('live-count').textContent = '0';
+  document.getElementById('m-attacks').textContent = '0';
+  document.getElementById('m-alerts').textContent = '0';
+  document.getElementById('m-triaged').textContent = '0';
 
-  // Add initial alerts
-  for (let i = 0; i < 4; i++) {
-    setTimeout(addAlert, i * 400);
-  }
+  // Clear the alert feed
+  const feed = document.getElementById('alert-feed');
+  if (feed) feed.innerHTML = '<div style="color:#4a7090;font-size:12px;padding:20px;text-align:center;font-family:monospace;">[ No alerts yet — launch an attack to begin ]</div>';
 
-  // Keep adding alerts every 8 seconds
-  setInterval(addAlert, 8000);
+  // Clear the terminal
+  const terminal = document.getElementById('hacker-terminal');
+  if (terminal) terminal.innerHTML = '<div style="color:#4a7090;">akash@glasgow-soc:~$ waiting for attack...<span style="display:inline-block;width:8px;height:14px;background:#00d4ff;margin-left:4px;animation:blink 1s infinite;vertical-align:-2px;"></span></div>';
 
-  // Tick request counter every 2 seconds
-  setInterval(tickRequests, 2000);
-
-  // Rotate triage every 5 seconds
-  rotateTriage();
-  setInterval(rotateTriage, 5000);
-
-  // Start hacker terminal
-  startHackerTerminal();
-
-  // Total requests start at your real data
-  totalRequests = 931;
-  document.getElementById('live-count').textContent = totalRequests.toLocaleString();
+  // Clear triage panel
+  const tsev = document.getElementById('t-sev');
+  const tconf = document.getElementById('t-conf');
+  const taction = document.getElementById('t-action');
+  const tesc = document.getElementById('t-esc');
+  if (tsev) tsev.textContent = '—';
+  if (tconf) tconf.textContent = '—';
+  if (taction) taction.textContent = 'No alerts yet';
+  if (tesc) tesc.textContent = '—';
 
 });
 

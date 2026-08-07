@@ -1,0 +1,14 @@
+{
+  "attack": "BOLA",
+  "owasp": "API1:2023",
+  "timestamp": "2026-08-06T15:49:37.795260",
+  "endpoint": "http://localhost:8888/community/api/v2/community/posts/recent",
+  "requests": 20,
+  "successful": 20,
+  "exposed_users": [
+    "robot001@example.com",
+    "pogba006@example.com",
+    "adam007@example.com"
+  ],
+  "severity": "HIGH"
+}

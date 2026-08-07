@@ -1,0 +1,9 @@
+{
+  "attack": "BOLA",
+  "owasp": "API1:2023",
+  "timestamp": "2026-08-06T17:02:45.405675",
+  "requests": 5,
+  "successful": 0,
+  "exposed_users": [],
+  "severity": "HIGH"
+}
