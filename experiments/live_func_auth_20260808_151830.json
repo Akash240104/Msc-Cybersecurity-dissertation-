@@ -1,0 +1,9 @@
+{
+  "attack": "Func Auth",
+  "owasp": "API5:2023",
+  "requests": 5,
+  "successful": 0,
+  "severity": "MEDIUM",
+  "exposed": [],
+  "timestamp": "2026-08-08T15:18:30.576805"
+}

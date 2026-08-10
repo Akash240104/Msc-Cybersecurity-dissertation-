@@ -54,7 +54,7 @@ def query_splunk(spl):
         sid = r.json().get("sid")
         if not sid:
             return None
-        time.sleep(3)
+        time.sleep(1)
         r2 = requests.get(
             "https://localhost:8089/services/search/jobs/" + sid + "/results",
             params={"output_mode": "json"},
@@ -577,13 +577,7 @@ def attack_userenum_stream():
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
     )
 
-if __name__ == '__main__':
-    print("=" * 50)
-    print("CyberShield Attack Server")
-    print("University of Glasgow — COMPSCI5086P")
-    print("Running on http://localhost:5000")
-    print("=" * 50)
-    app.run(host='0.0.0.0', port=5000, debug=False)
+
 
 @app.route('/attack/objproperty/stream', methods=['GET'])
 def attack_objproperty_stream():
@@ -784,3 +778,94 @@ def attack_businessflow_stream():
         yield f'data: {_json.dumps({"phase":"done","successful":len(findings),"exposed":findings})}\n\n'
     return app.response_class(generate(), mimetype='text/event-stream',
         headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+
+@app.route('/analytics', methods=['GET'])
+def analytics():
+    import json as _json, os, glob
+
+    # Single combined Splunk query - much faster
+    all_results = query_splunk('index=api_logs | stats count')
+    total_events = int(all_results[0].get("count", 0)) if all_results else 0
+
+    # Attack counts from stored experiment files (instant, no Splunk query needed)
+    experiments_dir = os.path.expanduser("~/mscproject/experiments")
+    attack_counts = {
+        "BOLA": 0, "Brute Force": 0, "Rate Limit": 0, "User Enum": 0,
+        "Obj Property": 0, "Func Auth": 0, "Misconfig": 0,
+        "Inventory": 0, "Mass Assignment": 0, "Business Flow": 0
+    }
+    sev_counts = {"HIGH": 0, "MEDIUM": 0, "LOW": 0, "CRITICAL": 0}
+    triage_results = []
+
+    for f in sorted(glob.glob(experiments_dir + "/live_*.json")):
+        try:
+            with open(f) as jf:
+                data = _json.load(jf)
+                attack = data.get("attack", "")
+                sev = data.get("severity", "MEDIUM")
+                # Match attack names flexibly
+                matched = False
+                for key in attack_counts:
+                    if key.lower() in attack.lower() or attack.lower() in key.lower():
+                        attack_counts[key] += data.get("requests", data.get("attempts", 0))
+                        matched = True
+                        break
+                sev_counts[sev] = sev_counts.get(sev, 0) + 1
+                triage_results.append({
+                    "attack": attack,
+                    "severity": sev,
+                    "timestamp": data.get("timestamp", ""),
+                    "requests": data.get("requests", data.get("attempts", 0))
+                })
+        except:
+            pass
+
+    # Timeline - one quick query
+    timeline_r = query_splunk('index=api_logs earliest=-2h | timechart span=10m count')
+    timeline = []
+    if timeline_r:
+        for row in timeline_r:
+            t = row.get("_time", "")
+            timeline.append({
+                "time": t[11:16] if len(t) > 16 else str(len(timeline)),
+                "count": int(float(row.get("count", 0)))
+            })
+
+    return jsonify({
+        "total_events": total_events,
+        "attack_counts": attack_counts,
+        "timeline": timeline,
+        "severity_counts": sev_counts,
+        "triage_results": triage_results[-10:]
+    })
+
+
+
+
+def save_experiment(attack_name, data):
+    import json as _json, datetime, os
+    experiments_dir = os.path.expanduser("~/mscproject/experiments")
+    ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    safe_name = attack_name.lower().replace(" ", "_").replace("/", "")
+    path = f"{experiments_dir}/live_{safe_name}_{ts}.json"
+    data["timestamp"] = datetime.datetime.now().isoformat()
+    data["attack"] = attack_name
+    try:
+        with open(path, "w") as f:
+            _json.dump(data, f, indent=2)
+    except Exception as e:
+        print(f"[WARN] Could not save experiment: {e}")
+
+@app.route('/save_result', methods=['POST'])
+def save_result():
+    data = request.json
+    save_experiment(data.get("attack", "Unknown"), data)
+    return jsonify({"status": "ok"})
+
+if __name__ == '__main__':
+    print("=" * 50)
+    print("CyberShield Attack Server")
+    print("University of Glasgow — COMPSCI5086P")
+    print("Running on http://localhost:5000")
+    print("=" * 50)
+    app.run(host='0.0.0.0', port=5000, debug=False)

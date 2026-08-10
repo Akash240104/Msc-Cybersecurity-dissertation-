@@ -1,0 +1,9 @@
+{
+  "attack": "Inventory",
+  "owasp": "API9:2023",
+  "requests": 3,
+  "successful": 0,
+  "severity": "MEDIUM",
+  "exposed": [],
+  "timestamp": "2026-08-08T15:19:40.053920"
+}

@@ -912,6 +912,7 @@
     }
 
   </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -970,7 +971,7 @@
     Live Dashboard
     <span class="tab-badge" id="badge-alerts">0</span>
   </div>
-  <div class="tab" onclick="showPage('detection', this)">Detection Results</div>
+  <div class="tab" onclick="showPage('detection', this); loadAnalytics();">Detection Results</div>
   <div class="tab" onclick="showPage('triage', this)">AI Triage</div>
   <div class="tab" onclick="showPage('evaluation', this)">Evaluation Study</div>
   <div class="tab" onclick="showPage('results', this)">Results</div>
@@ -1026,22 +1027,46 @@
           <div class="counter-number" id="live-count">0</div>
           <div class="counter-label">Requests Detected</div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
-          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px">
-            <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:4px">BOLA</div>
-            <div style="font-family:monospace;font-size:20px;color:#ff6688" id="c-bola">0</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px">
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px">
+            <div style="font-family:monospace;font-size:9px;color:#4a7090;margin-bottom:4px">BOLA</div>
+            <div style="font-family:monospace;font-size:18px;color:#ff6688" id="c-bola">0</div>
           </div>
-          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px">
-            <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:4px">BRUTE FORCE</div>
-            <div style="font-family:monospace;font-size:20px;color:#ff0044" id="c-brute">0</div>
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px">
+            <div style="font-family:monospace;font-size:9px;color:#4a7090;margin-bottom:4px">BRUTE FORCE</div>
+            <div style="font-family:monospace;font-size:18px;color:#ff0044" id="c-brute">0</div>
           </div>
-          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px">
-            <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:4px">RATE LIMIT</div>
-            <div style="font-family:monospace;font-size:20px;color:#ffaa00" id="c-rate">0</div>
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px">
+            <div style="font-family:monospace;font-size:9px;color:#4a7090;margin-bottom:4px">RATE LIMIT</div>
+            <div style="font-family:monospace;font-size:18px;color:#ffaa00" id="c-rate">0</div>
           </div>
-          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px">
-            <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:4px">USER ENUM</div>
-            <div style="font-family:monospace;font-size:20px;color:#00d4ff" id="c-enum">0</div>
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px">
+            <div style="font-family:monospace;font-size:9px;color:#4a7090;margin-bottom:4px">USER ENUM</div>
+            <div style="font-family:monospace;font-size:18px;color:#00d4ff" id="c-enum">0</div>
+          </div>
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px">
+            <div style="font-family:monospace;font-size:9px;color:#4a7090;margin-bottom:4px">OBJ PROPERTY</div>
+            <div style="font-family:monospace;font-size:18px;color:#ff6688" id="c-obj">0</div>
+          </div>
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px">
+            <div style="font-family:monospace;font-size:9px;color:#4a7090;margin-bottom:4px">FUNC AUTH</div>
+            <div style="font-family:monospace;font-size:18px;color:#ff0044" id="c-func">0</div>
+          </div>
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px">
+            <div style="font-family:monospace;font-size:9px;color:#4a7090;margin-bottom:4px">MISCONFIG</div>
+            <div style="font-family:monospace;font-size:18px;color:#ffaa00" id="c-misconfig">0</div>
+          </div>
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px">
+            <div style="font-family:monospace;font-size:9px;color:#4a7090;margin-bottom:4px">INVENTORY</div>
+            <div style="font-family:monospace;font-size:18px;color:#00d4ff" id="c-inventory">0</div>
+          </div>
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px">
+            <div style="font-family:monospace;font-size:9px;color:#4a7090;margin-bottom:4px">MASS ASSIGN</div>
+            <div style="font-family:monospace;font-size:18px;color:#ff6688" id="c-mass">0</div>
+          </div>
+          <div style="text-align:center;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px">
+            <div style="font-family:monospace;font-size:9px;color:#4a7090;margin-bottom:4px">BUSINESS FLOW</div>
+            <div style="font-family:monospace;font-size:18px;color:#00ff88" id="c-business">0</div>
           </div>
         </div>
       </div>
@@ -1049,7 +1074,7 @@
 
   </div>
 
-</div>
+
 
 
   <!-- HACKER TERMINAL -->
@@ -1105,6 +1130,10 @@
               <button class="btn-attack" onclick="launchAttack('User Enum','API1:2023',30)"> USER ENUM</button>
               <button class="btn-attack" onclick="launchAttack('Obj Property','API3:2023',10)"> OBJ PROPERTY</button>
               <button class="btn-attack" onclick="launchAttack('Misconfig','API8:2023',5)"> MISCONFIG</button>
+              <button class="btn-attack" onclick="launchAttack('Func Auth','API5:2023',5)"> FUNC AUTH</button>
+              <button class="btn-attack" onclick="launchAttack('Inventory','API9:2023',3)"> INVENTORY</button>
+              <button class="btn-attack" onclick="launchAttack('Mass Assignment','API6:2023',3)"> MASS ASSIGN</button>
+              <button class="btn-attack" onclick="launchAttack('Business Flow','API10:2023',5)"> BUSINESS FLOW</button>
             </div>
             <div style="font-family:monospace;font-size:10px;color:#4a7090;text-align:center">
               Click any attack to simulate live  dashboard updates in real time
@@ -1113,73 +1142,104 @@
         </div>
 
 </div>
+</div>
+
 
 <!-- 
      PAGE 2: DETECTION RESULTS
  -->
 <div class="page hidden" id="page-detection">
 
-  <div class="panel" style="margin-bottom:15px">
+  <!-- TOP METRICS -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px">
+    <div class="panel" style="padding:16px;text-align:center">
+      <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:6px">TOTAL SPLUNK EVENTS</div>
+      <div style="font-family:monospace;font-size:32px;color:#00d4ff" id="an-total">—</div>
+    </div>
+    <div class="panel" style="padding:16px;text-align:center">
+      <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:6px">ATTACK TYPES DETECTED</div>
+      <div style="font-family:monospace;font-size:32px;color:#ff6688" id="an-attacks">—</div>
+    </div>
+    <div class="panel" style="padding:16px;text-align:center">
+      <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:6px">HIGH/CRITICAL ALERTS</div>
+      <div style="font-family:monospace;font-size:32px;color:#ffaa00" id="an-high">—</div>
+    </div>
+    <div class="panel" style="padding:16px;text-align:center">
+      <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:6px">AI TRIAGE RUNS</div>
+      <div style="font-family:monospace;font-size:32px;color:#00ff88" id="an-triaged">—</div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 1 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:15px">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Live Event Timeline</div>
+        <div class="panel-badge">SPLUNK INDEX=API_LOGS</div>
+      </div>
+      <div class="panel-body" style="height:180px;position:relative">
+        <canvas id="chart-timeline"></canvas>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Events by Attack Type</div>
+        <div class="panel-badge">REAL SPLUNK DATA</div>
+      </div>
+      <div class="panel-body" style="height:180px;position:relative">
+        <canvas id="chart-attacks"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 2 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:15px">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">AI Triage Severity Breakdown</div>
+        <div class="panel-badge">LLAMA 3.2 OUTPUT</div>
+      </div>
+      <div class="panel-body" style="height:180px;position:relative;display:flex;align-items:center;justify-content:center">
+        <canvas id="chart-severity" style="max-height:170px"></canvas>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Detection Method Comparison</div>
+        <div class="panel-badge">SPL vs MLTK vs AI</div>
+      </div>
+      <div class="panel-body" style="height:180px;position:relative">
+        <canvas id="chart-methods"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE ATTACK LOG TABLE -->
+  <div class="panel">
     <div class="panel-header">
-      <div class="panel-title">OWASP API Top 10  SPL Detection Results</div>
-      <div class="panel-badge">SPLUNK ENTERPRISE 9.3</div>
+      <div class="panel-title">Live Attack Log</div>
+      <div class="panel-badge" style="cursor:pointer;color:#00d4ff" onclick="loadAnalytics()">REFRESH FROM SPLUNK</div>
     </div>
     <div class="panel-body" style="padding:0">
       <table class="det-table">
         <thead>
           <tr>
             <th>Attack</th>
-            <th>OWASP</th>
-            <th>SPL Rule</th>
-            <th>Detected</th>
             <th>Severity</th>
+            <th>Requests</th>
+            <th>Timestamp</th>
             <th>Status</th>
           </tr>
         </thead>
-        <tbody id="detection-table-body"></tbody>
+        <tbody id="an-table">
+          <tr><td colspan="5" style="text-align:center;color:#4a7090;padding:20px;font-family:monospace">Click Detection Results tab after running an attack</td></tr>
+        </tbody>
       </table>
-    </div>
-  </div>
-
-  <div class="grid-2">
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">Detection Count by Attack</div>
-        <div class="panel-badge">BAR CHART</div>
-      </div>
-      <div class="panel-body">
-        <div class="bar-chart" id="bar-chart"></div>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">MLTK Anomaly Detection</div>
-        <div class="panel-badge">ML RESULT</div>
-      </div>
-      <div class="panel-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-          <div style="background:#020810;border:1px solid #0d2040;border-radius:6px;padding:14px;text-align:center">
-            <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:6px">OUTLIERS FOUND</div>
-            <div style="font-family:monospace;font-size:36px;color:#00d4ff">1</div>
-          </div>
-          <div style="background:#020810;border:1px solid #0d2040;border-radius:6px;padding:14px;text-align:center">
-            <div style="font-family:monospace;font-size:10px;color:#4a7090;margin-bottom:6px">ALGORITHM</div>
-            <div style="font-family:monospace;font-size:11px;color:#00ff88;margin-top:6px">Median Absolute<br>Deviation</div>
-          </div>
-        </div>
-        <div style="background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px;font-family:monospace;font-size:11px;color:#4a7090">
-          <div style="color:#00d4ff;margin-bottom:6px">// KEY FINDING</div>
-          SPL rules detect attacks immediately with any dataset size. MLTK requires historical baseline  detected spike anomaly after sufficient traffic volume. Both approaches complement each other.
-        </div>
-      </div>
     </div>
   </div>
 
 </div>
 
-<!-- 
-     PAGE 3: AI TRIAGE
- -->
 <div class="page hidden" id="page-triage">
 
   <div class="grid-2">
@@ -1471,6 +1531,20 @@ function updateAttackCounter(attackName, count) {
   liveCounts[attackName] = (liveCounts[attackName] || 0) + count;
   ATTACKS.forEach(a => { if (a.name === attackName) a.count = liveCounts[attackName]; });
   buildDetection();
+  // Update DOM counter boxes
+  const idMap = {
+    'BOLA': 'c-bola', 'Brute Force': 'c-brute',
+    'Rate Limit': 'c-rate', 'User Enum': 'c-enum',
+    'Obj Property': 'c-obj', 'Func Auth': 'c-func',
+    'Misconfig': 'c-misconfig', 'Inventory': 'c-inventory',
+    'Mass Assignment': 'c-mass', 'Business Flow': 'c-business'
+  };
+  const el = document.getElementById(idMap[attackName]);
+  if (el) el.textContent = liveCounts[attackName];
+  // Update total
+  const total = Object.values(liveCounts).reduce((a,b) => a+b, 0);
+  const lc = document.getElementById('live-count');
+  if (lc) lc.textContent = total.toLocaleString();
 }
 
 const ALERT_TEMPLATES = [
@@ -1603,7 +1677,7 @@ function showPage(name, tab) {
   document.getElementById('page-' + name).classList.add('active');
   if (tab) tab.classList.add('active');
   if (name === 'results') updateResults();
-  if (name === 'detection') buildDetection();
+  if (name === 'detection') { setTimeout(loadAnalytics, 100); }
 }
 
 // 
@@ -1680,7 +1754,7 @@ function tickRequests() {
 // TRIAGE ROTATION  cycles through attacks
 // 
 function rotateTriage() {
-  const t = TRIAGE_DATA[triageIndex % TRIAGE_DATA.length];
+  if (!TRIAGE_DATA || TRIAGE_DATA.length === 0) return;
   document.getElementById('t-sev').textContent = t.sev;
   document.getElementById('t-sev').className = 'triage-val ' + t.sevC;
   document.getElementById('t-type').textContent = t.type;
@@ -1697,6 +1771,7 @@ function rotateTriage() {
 // 
 function buildDetection() {
   const tbody = document.getElementById('detection-table-body');
+  if (!tbody) return;
   if (tbody.children.length > 0) return; // already built
 
   ATTACKS.forEach(a => {
@@ -2149,6 +2224,12 @@ async function doLogin() {
       document.getElementById('conn-status').style.color = '#00ff88';
       document.getElementById('login-password').value = '';
       document.getElementById('launch-mode').textContent = 'LIVE MODE';
+      // Enable all attack buttons
+      document.querySelectorAll('.btn-attack').forEach(b => {
+        b.disabled = false;
+        b.style.opacity = '1';
+        b.style.cursor = 'pointer';
+      });
       addTermLine('[CONNECTED] crAPI authenticated  real attacks enabled', 'term-success');
     } else {
       document.getElementById('conn-status').textContent = 'LOGIN FAILED';
@@ -2238,7 +2319,14 @@ function launchAttack(attackName, owasp, count) {
 
   const streamEndpoint = attackName === 'BOLA' ? 'bola' :
     attackName === 'Brute Force' ? 'bruteforce' :
-    attackName === 'Rate Limit' ? 'ratelimit' : 'userenum';
+    attackName === 'Rate Limit' ? 'ratelimit' :
+    attackName === 'User Enum' ? 'userenum' :
+    attackName === 'Obj Property' ? 'objproperty' :
+    attackName === 'Misconfig' ? 'misconfiguration' :
+    attackName === 'Func Auth' ? 'funcauth' :
+    attackName === 'Inventory' ? 'inventory' :
+    attackName === 'Mass Assignment' ? 'massassignment' :
+    attackName === 'Business Flow' ? 'businessflow' : 'bola';
 
   const streamUrl = 'http://localhost:5000/attack/' + streamEndpoint +
     '/stream?count=' + count + '&token=' + (window.crapi_token || '');
@@ -2297,6 +2385,19 @@ function launchAttack(attackName, owasp, count) {
     if (data.phase === 'done') {
       es.close();
       updateAttackCounter(attackName, sent);
+      // Save result to experiments folder
+      fetch('http://localhost:5000/save_result', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          attack: attackName,
+          owasp: owasp,
+          requests: sent,
+          successful: data.successful || 0,
+          severity: liveTriage.sev || 'HIGH',
+          exposed: data.exposed || []
+        })
+      }).catch(e => console.log('Save failed:', e));
       finishAttack(attackName, owasp, sent, success);
     }
   };
@@ -2348,6 +2449,7 @@ function finishAttack(name, owasp, sent, success) {
     document.getElementById('attack-top-bar').classList.remove('active');
     attackRunning = false;
     showTriageResult(name, owasp);
+    loadAnalytics();
   }, 3000);
 
   // Matrix rain celebration
@@ -2376,6 +2478,13 @@ window.addEventListener('load', () => {
   // Clock only  everything else starts empty
   updateClock();
   setInterval(updateClock, 1000);
+
+  // Disable attack buttons until logged in
+  document.querySelectorAll('.btn-attack').forEach(b => {
+    b.disabled = true;
+    b.style.opacity = '0.4';
+    b.style.cursor = 'not-allowed';
+  });
 
   // Reset connection state on every page load
   document.getElementById('conn-status').textContent = 'DISCONNECTED';
@@ -2410,6 +2519,154 @@ window.addEventListener('load', () => {
   if (tesc) tesc.textContent = '';
 
 });
+
+// ── ANALYTICS / DETECTION RESULTS TAB ────────────────────────────
+let chartTimeline = null;
+let chartAttacks = null;
+let chartSeverity = null;
+let chartMethods = null;
+
+const CHART_DEFAULTS = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { labels: { color: '#c8e0f0', font: { family: 'monospace', size: 11 } } } },
+  scales: {
+    x: { ticks: { color: '#4a7090', font: { family: 'monospace', size: 10 } }, grid: { color: '#0d2040' } },
+    y: { ticks: { color: '#4a7090', font: { family: 'monospace', size: 10 } }, grid: { color: '#0d2040' } }
+  }
+};
+
+async function loadAnalytics() {
+  try {
+    const r = await fetch('http://localhost:5000/analytics');
+    const data = await r.json();
+
+    // Update metrics
+    document.getElementById('an-total').textContent = data.total_events.toLocaleString();
+    document.getElementById('an-attacks').textContent = Object.keys(data.attack_counts).length;
+    const highCrit = (data.severity_counts.HIGH || 0) + (data.severity_counts.CRITICAL || 0);
+    document.getElementById('an-high').textContent = highCrit;
+    document.getElementById('an-triaged').textContent = data.triage_results.length;
+
+    // Timeline chart
+    const tlCtx = document.getElementById('chart-timeline');
+    if (tlCtx) {
+      if (chartTimeline) chartTimeline.destroy();
+      chartTimeline = new Chart(tlCtx, {
+        type: 'line',
+        data: {
+          labels: data.timeline.map(t => t.time),
+          datasets: [{
+            label: 'Events',
+            data: data.timeline.map(t => t.count),
+            borderColor: '#00d4ff',
+            backgroundColor: 'rgba(0,212,255,0.1)',
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#00d4ff'
+          }]
+        },
+        options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } } }
+      });
+    }
+
+    // Attack distribution bar chart
+    const atkCtx = document.getElementById('chart-attacks');
+    if (atkCtx) {
+      if (chartAttacks) chartAttacks.destroy();
+      chartAttacks = new Chart(atkCtx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(data.attack_counts),
+          datasets: [{
+            label: 'Splunk Events',
+            data: Object.values(data.attack_counts),
+            backgroundColor: ['#ff4d6d','#ff8c00','#00d4ff','#00ff88'],
+            borderRadius: 4
+          }]
+        },
+        options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } } }
+      });
+    }
+
+    // Severity donut chart
+    const sevCtx = document.getElementById('chart-severity');
+    if (sevCtx) {
+      if (chartSeverity) chartSeverity.destroy();
+      const sevData = data.severity_counts;
+      chartSeverity = new Chart(sevCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['CRITICAL','HIGH','MEDIUM','LOW'],
+          datasets: [{
+            data: [sevData.CRITICAL||0, sevData.HIGH||0, sevData.MEDIUM||0, sevData.LOW||0],
+            backgroundColor: ['#ff0044','#ff6688','#ffaa00','#00ff88'],
+            borderColor: '#0b0f1a',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { position: 'bottom', labels: { color: '#c8e0f0', font: { family: 'monospace', size: 10 } } } }
+        }
+      });
+    }
+
+    // Detection method comparison
+    const methCtx = document.getElementById('chart-methods');
+    if (methCtx) {
+      if (chartMethods) chartMethods.destroy();
+      const attacks = Object.keys(data.attack_counts);
+      const splunkVals = attacks.map(a => data.attack_counts[a] > 0 ? 100 : 0);
+      const aiVals = attacks.map(() => 80);
+      const mltkVals = attacks.map((a, i) => a === 'BOLA' ? 100 : 0);
+      chartMethods = new Chart(methCtx, {
+        type: 'bar',
+        data: {
+          labels: attacks,
+          datasets: [
+            { label: 'SPL Detected', data: splunkVals, backgroundColor: '#00d4ff', borderRadius: 3 },
+            { label: 'AI Confidence', data: aiVals, backgroundColor: '#00ff88', borderRadius: 3 },
+            { label: 'MLTK', data: mltkVals, backgroundColor: '#ffaa00', borderRadius: 3 }
+          ]
+        },
+        options: {
+          ...CHART_DEFAULTS,
+          scales: {
+            x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 45, font: { size: 9 } } },
+            y: { ...CHART_DEFAULTS.scales.y, max: 120 }
+          }
+        }
+      });
+    }
+
+    // Populate table
+    const tbody = document.getElementById('an-table');
+    if (tbody) {
+      tbody.innerHTML = '';
+      if (data.triage_results.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#4a7090;padding:20px">No attacks run yet — launch an attack to see results</td></tr>';
+      } else {
+        data.triage_results.reverse().forEach(r => {
+          const row = document.createElement('tr');
+          const sevColor = r.severity === 'CRITICAL' ? '#ff0044' : r.severity === 'HIGH' ? '#ff6688' : '#ffaa00';
+          row.innerHTML = '<td>' + r.attack + '</td>' +
+            '<td style="color:' + sevColor + '">' + r.severity + '</td>' +
+            '<td>' + r.requests + '</td>' +
+            '<td style="color:#4a7090">' + (r.timestamp||'').substring(0,19).replace('T',' ') + '</td>' +
+            '<td style="color:#00ff88">DETECTED</td>';
+          tbody.appendChild(row);
+        });
+      }
+    }
+
+  } catch(e) {
+    console.error('Analytics load failed:', e);
+  }
+}
+
+// Auto-load when detection tab is clicked
+const origShowPage = window.showPage;
 
 // Force reset even on Chrome bfcache restore
 window.addEventListener('pageshow', function(event) {

@@ -1,0 +1,9 @@
+{
+  "attack": "User Enum",
+  "owasp": "API1:2023",
+  "requests": 30,
+  "successful": 30,
+  "severity": "HIGH",
+  "exposed": [],
+  "timestamp": "2026-08-08T14:38:44.664168"
+}

@@ -1,0 +1,9 @@
+{
+  "attack": "Obj Property",
+  "owasp": "API3:2023",
+  "requests": 10,
+  "successful": 10,
+  "severity": "MEDIUM",
+  "exposed": [],
+  "timestamp": "2026-08-08T14:39:14.125269"
+}

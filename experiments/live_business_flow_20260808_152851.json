@@ -1,0 +1,11 @@
+{
+  "attack": "Business Flow",
+  "owasp": "API10:2023",
+  "requests": 5,
+  "successful": 1,
+  "severity": "HIGH",
+  "exposed": [
+    "TRAC075"
+  ],
+  "timestamp": "2026-08-08T15:28:51.382714"
+}
