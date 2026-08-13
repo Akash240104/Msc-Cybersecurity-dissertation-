@@ -1,0 +1,16 @@
+{
+  "attack": "Obj Property",
+  "owasp": "API3:2023",
+  "requests": 6,
+  "successful": 6,
+  "severity": "HIGH",
+  "exposed": [
+    "available_credit",
+    "video_url",
+    "video_name",
+    "video_id",
+    "role",
+    "picture_url"
+  ],
+  "timestamp": "2026-08-10T14:46:57.724895"
+}

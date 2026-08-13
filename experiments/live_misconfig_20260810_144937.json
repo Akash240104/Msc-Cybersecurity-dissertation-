@@ -1,0 +1,13 @@
+{
+  "attack": "Misconfig",
+  "owasp": "API8:2023",
+  "requests": 3,
+  "successful": 3,
+  "severity": "HIGH",
+  "exposed": [
+    "/identity/api/auth/login",
+    "/identity/api/v2/user/dashboard",
+    "/community/api/v2/community/posts"
+  ],
+  "timestamp": "2026-08-10T14:49:37.436683"
+}

@@ -1,0 +1,14 @@
+{
+  "attack": "BOLA",
+  "owasp": "API1:2023",
+  "requests": 20,
+  "successful": 20,
+  "severity": "MEDIUM",
+  "exposed": [
+    "akashchandru24@gmail.com",
+    "robot001@example.com",
+    "pogba006@example.com",
+    "adam007@example.com"
+  ],
+  "timestamp": "2026-08-13T19:33:27.911663"
+}

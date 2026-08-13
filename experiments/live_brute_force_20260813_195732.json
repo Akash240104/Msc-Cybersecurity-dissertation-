@@ -1,0 +1,9 @@
+{
+  "attack": "Brute Force",
+  "owasp": "API2:2023",
+  "requests": 30,
+  "successful": 30,
+  "severity": "HIGH",
+  "exposed": [],
+  "timestamp": "2026-08-13T19:57:32.649711"
+}
