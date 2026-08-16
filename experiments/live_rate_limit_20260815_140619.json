@@ -1,0 +1,9 @@
+{
+  "attack": "Rate Limit",
+  "owasp": "API4:2023",
+  "requests": 100,
+  "successful": 100,
+  "severity": "HIGH",
+  "exposed": [],
+  "timestamp": "2026-08-15T14:06:19.282857"
+}

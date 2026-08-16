@@ -164,6 +164,7 @@
     .page {
       display: none;
       padding: 20px;
+      min-height: calc(100vh - 160px);
     }
 
     .page.active {
@@ -1315,6 +1316,15 @@
      PAGE 4: EVALUATION
  -->
 <div class="page hidden" id="page-evaluation">
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:2rem">
+  <div style="font-family:monospace;font-size:10px;letter-spacing:.3em;color:#1a3060;margin-bottom:1.5rem">COMPSCI5086P · UNIVERSITY OF GLASGOW</div>
+  <div style="font-family:monospace;font-size:26px;font-weight:700;color:#00d4ff;letter-spacing:.15em;margin-bottom:.75rem">SOC ANALYST EVALUATION</div>
+  <div style="font-family:monospace;font-size:12px;color:#4a7090;margin-bottom:.5rem">AI-assisted alert triage · MSc Cybersecurity dissertation</div>
+  <div style="width:60px;height:1px;background:#0d2040;margin:1.5rem auto"></div>
+  <p style="font-size:13px;color:#4a7090;line-height:1.8;max-width:500px;margin-bottom:2rem">Opens a full-screen evaluation study. Each participant sees a live attack animation then triages 3 real security alerts with and without AI assistance. Takes approximately 15 minutes.</p>
+  <button onclick="window.open('/static/study.html','_blank')" style="background:#00d4ff;color:#000;border:none;padding:16px 40px;border-radius:6px;font-family:monospace;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.1em">OPEN EVALUATION STUDY →</button>
+  <div style="margin-top:2rem;font-family:monospace;font-size:11px;color:#1a3060;line-height:2">3 alerts · Round A (no AI) · Round B (with AI) · JSON export at end</div>
+</div>
 <div class="eval-wrap">
 
   <!-- STEP 0: Welcome -->

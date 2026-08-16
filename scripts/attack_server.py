@@ -438,6 +438,10 @@ def run_triage():
 
 
 
+@app.route('/static/study.html')
+def study():
+    return send_from_directory('/home/xd-strange24/mscproject/evaluation', 'study.html')
+
 @app.route('/')
 def dashboard():
     import os

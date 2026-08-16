@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberShield — SOC Analyst Evaluation Study</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:monospace}
+body{background:#020c18;color:#c8e0f0;min-height:100vh}
+@keyframes pulse{from{opacity:.6}to{opacity:1}}
+@keyframes glow{0%,100%{text-shadow:0 0 8px currentColor}50%{text-shadow:0 0 24px currentColor}}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.anim-line{animation:slideIn .25s ease forwards}
+.blink{display:inline-block;width:7px;height:13px;background:#00d4ff;vertical-align:-2px;animation:pulse .8s step-end infinite}
+
+/* Animation screen */
+#anim-screen{position:fixed;inset:0;background:#020c18;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;padding:2rem}
+canvas#mx{position:absolute;inset:0;width:100%;height:100%}
+#anim-title{position:relative;z-index:2;text-align:center;transition:opacity .6s}
+.cs-logo{font-size:clamp(28px,5vw,48px);font-weight:700;color:#00d4ff;letter-spacing:.25em;animation:glow 2s ease-in-out infinite}
+.cs-sub{font-size:12px;letter-spacing:.2em;color:#4da3ff;margin-top:.5rem}
+.cs-live{font-size:11px;letter-spacing:.15em;color:#ff4d6d;margin-top:1.5rem;animation:pulse 1.2s ease-in-out infinite alternate}
+.cs-who{font-size:10px;color:#1a3060;margin-top:.75rem}
+#term-wrap{position:relative;z-index:2;width:100%;max-width:720px;opacity:0;transition:opacity .6s;display:flex;flex-direction:column;gap:.75rem}
+.term-status{display:flex;justify-content:space-between;font-size:10px;color:#1a3060}
+#term-win{background:#020810;border:1px solid #0d2040;border-radius:8px;overflow:hidden;transition:border-color .4s,box-shadow .4s}
+.term-bar{background:#0a1828;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #0d2040}
+.dot{width:10px;height:10px;border-radius:50%}
+.term-name{font-size:11px;color:#1a3060;margin-left:8px;flex:1}
+#req-ctr{font-size:10px;color:#1a3060}
+#term-body{padding:14px 16px;font-size:12px;line-height:1.95;max-height:50vh;overflow:auto}
+#threat-lbl{transition:color .4s}
+#alert-overlay{position:absolute;inset:0;z-index:3;background:rgba(2,8,16,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0;transition:opacity .5s;pointer-events:none;padding:2rem}
+.alert-tag{font-size:10px;letter-spacing:.3em;color:#4a7090;margin-bottom:1.5rem}
+.alert-main{font-size:clamp(20px,4vw,30px);font-weight:700;color:#ff4d6d;letter-spacing:.12em;animation:glow 1.5s ease-in-out infinite;margin-bottom:.5rem}
+.alert-sub{font-size:13px;color:#ffb020;letter-spacing:.08em;margin-bottom:2rem}
+.alert-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:400px;width:100%;margin-bottom:2rem}
+.alert-card{background:#0a0f1a;border:1px solid #1a2a40;border-radius:6px;padding:12px}
+.alert-card-label{font-size:9px;color:#4a7090;letter-spacing:.1em;margin-bottom:4px}
+.alert-card-val{font-size:11px;color:#ff6688}
+.alert-loading{font-size:11px;color:#3a5070;animation:pulse 1.5s ease-in-out infinite}
+#skip-btn{position:fixed;bottom:1.25rem;right:1.25rem;font-size:10px;color:#1a3060;background:none;border:none;cursor:pointer;z-index:200;letter-spacing:.05em}
+#skip-btn:hover{color:#4da3ff}
+
+/* Study screen */
+#study-screen{display:none;min-height:100vh;background:#020c18;padding:1.5rem}
+.study-wrap{max-width:760px;margin:0 auto}
+.section{background:#0a1220;border:1px solid #0d2040;border-radius:10px;padding:1.25rem;margin-bottom:1rem}
+.section-title{font-size:11px;letter-spacing:.12em;margin-bottom:.75rem}
+.section-body{font-size:13px;color:#c8e0f0;line-height:1.8}
+.tag{display:inline-block;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.05em}
+.tag-warn{background:rgba(255,176,32,.15);color:#ffb020;border:1px solid #ffb020}
+.tag-info{background:rgba(0,212,255,.1);color:#00d4ff;border:1px solid #00d4ff}
+.tag-ok{background:rgba(0,229,160,.1);color:#00e5a0;border:1px solid #00e5a0}
+.tag-danger{background:rgba(255,77,109,.1);color:#ff4d6d;border:1px solid #ff4d6d}
+input[type=text]{width:100%;background:#020810;border:1px solid #0d2040;border-radius:4px;padding:10px 12px;color:#c8e0f0;font-family:monospace;font-size:13px;outline:none}
+input[type=text]:focus{border-color:#00d4ff}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:.5rem}
+.ch{background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px;cursor:pointer;font-size:13px;color:#4a7090;transition:all .15s;text-align:center}
+.ch:hover{border-color:#4a7090;color:#c8e0f0}
+.ch.sel{background:rgba(0,212,255,.1);border-color:#00d4ff;color:#00d4ff}
+.ratings{display:flex;gap:6px;margin-top:.5rem}
+.rb{flex:1;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px;cursor:pointer;font-size:14px;color:#4a7090;text-align:center;font-weight:700;transition:all .15s}
+.rb:hover{border-color:#4a7090}
+.rb.sel{background:#00d4ff;border-color:#00d4ff;color:#000}
+.btn{width:100%;padding:14px;background:#00d4ff;color:#000;border:none;border-radius:6px;font-family:monospace;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.05em;margin-top:1rem;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn-secondary{background:#0a1220;color:#00d4ff;border:1px solid #00d4ff}
+.err{font-size:11px;color:#ff4d6d;margin-top:4px;display:none}
+.err.show{display:block}
+.progress{display:flex;gap:6px;margin-bottom:1.5rem}
+.pd{flex:1;height:4px;border-radius:2px;background:#0a1020}
+.pd.done{background:#00d4ff}
+.pd.active{background:#1a3060}
+.data-table{width:100%;border-collapse:collapse;margin:.75rem 0}
+.data-table td{padding:9px 0;border-bottom:1px solid #0d2040;font-size:13px;vertical-align:top}
+.data-table td:first-child{color:#4a7090;width:42%;padding-right:12px}
+.data-table tr:last-child td{border:none}
+.plain-box{background:#0a1628;border:1px solid #00d4ff22;border-radius:6px;padding:12px;font-size:13px;color:#4da3ff;line-height:1.7;margin-top:.75rem}
+.ai-box{background:#020810;border:1px solid #00d4ff33;border-radius:6px;padding:1rem}
+.ai-row{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid #0d2040;font-size:13px;gap:1rem}
+.ai-row:last-child{border:none}
+.ai-key{color:#4a7090;flex-shrink:0}
+.ai-val{color:#c8e0f0;font-weight:700;text-align:right}
+.ai-reason{font-size:12px;color:#4a7090;line-height:1.7;padding-top:.75rem;border-top:1px solid #0d2040;margin-top:4px}
+.summary-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #0d2040;font-size:13px}
+.summary-row:last-child{border:none}
+.prev-answer{background:#020810;border:1px solid #0d2040;border-radius:6px;padding:12px;font-size:13px;color:#4a7090;margin-bottom:1rem}
+.prev-answer strong{color:#c8e0f0}
+
+@media print {
+  textarea#export { display: none !important; }
+  #export-pre { display: block !important; white-space: pre-wrap; font-size: 10px; font-family: monospace; color: #000; word-break: break-all; }
+  .no-print-btn { display: none !important; }
+  textarea#export {
+    height: auto !important;
+    min-height: 600px !important;
+    overflow: visible !important;
+    white-space: pre-wrap !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ANIMATION SCREEN -->
+<div id="anim-screen">
+  <canvas id="mx"></canvas>
+  <button id="skip-btn" onclick="skipAnim()">skip →</button>
+
+  <div id="anim-title">
+    <div style="font-size:10px;letter-spacing:.35em;color:#0d2040;margin-bottom:1rem">COMPSCI5086P · UNIVERSITY OF GLASGOW · CYBERSECURITY</div>
+    <div class="cs-logo">CYBERSHIELD</div>
+    <div class="cs-sub">SOC SIMULATION PLATFORM</div>
+    <div style="width:80px;height:1px;background:#0d2040;margin:1.5rem auto"></div>
+    <div class="cs-live">● LIVE ATTACK SESSION RECORDING</div>
+    <div class="cs-who">Researcher: Akash Chandru · xd-strange24@glasgow-soc</div>
+  </div>
+
+  <div id="term-wrap">
+    <div class="term-status">
+      <span>CyberShield Research Lab · COMPSCI5086P · MSc Cybersecurity 2026</span>
+      <span id="threat-lbl">◆ MONITORING</span>
+    </div>
+    <div id="term-win">
+      <div class="term-bar">
+        <div class="dot" style="background:#ff5f56"></div>
+        <div class="dot" style="background:#ffbd2e"></div>
+        <div class="dot" style="background:#27c93f"></div>
+        <span class="term-name">xd-strange24@glasgow-soc: ~/mscproject/scripts</span>
+        <span id="req-ctr"></span>
+      </div>
+      <div id="term-body"></div>
+    </div>
+  </div>
+
+  <div id="alert-overlay">
+    <div class="alert-tag">CYBERSHIELD SIEM · SPLUNK ENTERPRISE · LLAMA 3.2</div>
+    <div style="font-size:11px;color:#ff4d6d;letter-spacing:.1em;margin-bottom:.75rem">▸ ATTACK SEQUENCE COMPLETE ◂</div>
+    <div class="alert-main">⚠ ANALYST REQUIRED</div>
+    <div class="alert-sub">SECURITY ALERT · HUMAN TRIAGE NEEDED</div>
+    <div class="alert-grid">
+      <div class="alert-card"><div class="alert-card-label">BOLA · API1:2023</div><div class="alert-card-val">3 accounts exposed</div></div>
+      <div class="alert-card"><div class="alert-card-label">BRUTE FORCE · API2:2023</div><div class="alert-card-val">No lockout detected</div></div>
+      <div class="alert-card"><div class="alert-card-label">SPL DETECTION</div><div class="alert-card-val" style="color:#4da3ff">HIGH severity fired</div></div>
+      <div class="alert-card"><div class="alert-card-label">AI TRIAGE · LLAMA 3.2</div><div class="alert-card-val" style="color:#22d3c8">80% confidence HIGH</div></div>
+    </div>
+    <div class="alert-loading">Loading evaluation study...</div>
+  </div>
+</div>
+
+<!-- STUDY SCREEN -->
+<div id="study-screen">
+<div class="study-wrap">
+
+  <div id="sec-welcome">
+    <div style="text-align:center;padding:2rem 0 1.5rem">
+      <div style="font-size:10px;letter-spacing:.3em;color:#1a3060;margin-bottom:.75rem">COMPSCI5086P · UNIVERSITY OF GLASGOW</div>
+      <div style="font-size:24px;font-weight:700;color:#00d4ff;letter-spacing:.15em;margin-bottom:.5rem">SOC ANALYST EVALUATION</div>
+      <div style="font-size:12px;color:#4a7090">AI-assisted alert triage study · MSc Cybersecurity dissertation</div>
+    </div>
+
+    <div class="section" style="border-color:#00d4ff33">
+      <div class="section-title" style="color:#00d4ff">WHAT IS THIS STUDY?</div>
+      <div class="section-body">
+        You will review <strong>3 real security alerts</strong> generated by the attack simulation you just witnessed. For each alert you complete two rounds.
+        <br><br>
+        <span style="color:#ff6688;font-weight:700">ROUND A</span> — Read the raw alert data. Decide how serious it is — on your own, no AI help.<br>
+        <span style="color:#00d4ff;font-weight:700">ROUND B</span> — See what the AI recommended. Compare and rate its usefulness.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title" style="color:#4a7090">BEFORE YOU BEGIN</div>
+      <div style="font-size:13px;color:#4a7090;line-height:2">
+        ✓ No cybersecurity knowledge required — everything explained in plain English<br>
+        ✓ No right or wrong answers — your honest reaction is what matters<br>
+        ✓ Takes approximately 15 minutes · your response time is recorded<br>
+        ✓ Data used for academic research only — University of Glasgow
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title" style="color:#4a7090">YOUR DETAILS</div>
+      <div style="margin-bottom:1rem">
+        <div style="font-size:11px;color:#4a7090;margin-bottom:6px;letter-spacing:.05em">NAME OR ANONYMOUS ID</div>
+        <input type="text" id="w-name" placeholder="e.g. Alex or Participant_1">
+        <div class="err" id="e-name">Please enter a name or ID.</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:#4a7090;margin-bottom:6px;letter-spacing:.05em">CYBERSECURITY BACKGROUND</div>
+        <div class="choices" id="w-bg">
+          <div class="ch" onclick="pick('w-bg',this)">No background</div>
+          <div class="ch" onclick="pick('w-bg',this)">Some IT knowledge</div>
+          <div class="ch" onclick="pick('w-bg',this)">MSc Cybersecurity student</div>
+          <div class="ch" onclick="pick('w-bg',this)">Security professional</div>
+        </div>
+        <div class="err" id="e-bg">Please select your background.</div>
+      </div>
+      <button class="btn" onclick="startStudy()">START EVALUATION →</button>
+    </div>
+  </div>
+
+  <div id="sec-alerts" style="display:none">
+    <div class="progress" id="progress"></div>
+    <div id="alert-content"></div>
+  </div>
+
+  <div id="sec-overall" style="display:none">
+    <div style="margin-bottom:1rem"><span class="tag tag-ok">✓ All alerts reviewed</span></div>
+    <h2 style="font-size:18px;color:#c8e0f0;margin-bottom:1rem">Final questions</h2>
+    <div class="section">
+      <div style="font-size:13px;color:#c8e0f0;font-weight:700;margin-bottom:.5rem">How useful was AI triage overall?</div>
+      <div style="font-size:11px;color:#4a7090;margin-bottom:.75rem">1 = not useful · 10 = extremely useful</div>
+      <div class="ratings" id="o-useful">
+        <div class="rb" onclick="pick('o-useful',this)">1</div><div class="rb" onclick="pick('o-useful',this)">2</div><div class="rb" onclick="pick('o-useful',this)">3</div><div class="rb" onclick="pick('o-useful',this)">4</div><div class="rb" onclick="pick('o-useful',this)">5</div><div class="rb" onclick="pick('o-useful',this)">6</div><div class="rb" onclick="pick('o-useful',this)">7</div><div class="rb" onclick="pick('o-useful',this)">8</div><div class="rb" onclick="pick('o-useful',this)">9</div><div class="rb" onclick="pick('o-useful',this)">10</div>
+      </div>
+      <div class="err" id="e-useful">Please rate AI usefulness.</div>
+      <div style="border-top:1px solid #0d2040;margin:1.25rem 0"></div>
+      <div style="font-size:13px;color:#c8e0f0;font-weight:700;margin-bottom:.75rem">Would you trust AI triage in a real SOC?</div>
+      <div class="choices" id="o-trust">
+        <div class="ch" onclick="pick('o-trust',this)">Yes — fully</div>
+        <div class="ch" onclick="pick('o-trust',this)">Yes — with oversight</div>
+        <div class="ch" onclick="pick('o-trust',this)">Maybe — needs work</div>
+        <div class="ch" onclick="pick('o-trust',this)">No</div>
+      </div>
+      <div class="err" id="e-trust">Please select an option.</div>
+      <div style="border-top:1px solid #0d2040;margin:1.25rem 0"></div>
+      <div style="font-size:13px;color:#c8e0f0;font-weight:700;margin-bottom:.5rem">What would improve the AI output? (optional)</div>
+      <textarea id="o-improve" style="width:100%;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px;color:#c8e0f0;font-family:monospace;font-size:13px;resize:vertical;min-height:80px" placeholder="Your suggestions..."></textarea>
+      <button class="btn" onclick="finishStudy()">SUBMIT ✓</button>
+    </div>
+  </div>
+
+  <div id="sec-done" style="display:none">
+    <div style="text-align:center;padding:3rem 0 2rem">
+      <div style="font-size:48px;margin-bottom:1rem">✓</div>
+      <div style="font-size:22px;font-weight:700;color:#00e5a0;letter-spacing:.1em;margin-bottom:.75rem">EVALUATION COMPLETE</div>
+      <div style="font-size:13px;color:#4a7090;margin-bottom:.5rem">Thank you for participating in this study.</div>
+      <div style="font-size:11px;color:#1a3060">University of Glasgow · COMPSCI5086P · Supervisor: Prof Jeremy Singer</div>
+    </div>
+    <div class="section">
+      <div class="section-title" style="color:#4a7090">YOUR SUMMARY</div>
+      <div id="summary"></div>
+    </div>
+    <div class="section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+  <div class="section-title" style="color:#4a7090;margin:0">DATA EXPORT (JSON)</div>
+  <div style="display:flex;gap:8px">
+    <button id="copy-btn" onclick="var t=document.getElementById('export');t.select();t.setSelectionRange(0,99999);try{document.execCommand('copy');document.getElementById('copy-btn').textContent='COPIED ✓';}catch(e){document.getElementById('copy-btn').textContent='SELECT ALL + CTRL+C';}" style="background:#00d4ff;color:#000;border:none;padding:6px 14px;border-radius:4px;font-family:monospace;font-size:11px;font-weight:700;cursor:pointer">COPY JSON</button>
+    <button onclick="window.print()" style="background:#ff6688;color:#000;border:none;padding:6px 14px;border-radius:4px;font-family:monospace;font-size:11px;font-weight:700;cursor:pointer">EXPORT PDF</button>
+  </div>
+</div></div>
+      <textarea id="export" style="width:100%;background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px;color:#4a7090;font-family:monospace;font-size:11px;min-height:200px;resize:vertical;overflow:auto" readonly></textarea>
+    <pre id="export-pre" style="display:none"></pre>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+const ALERTS = [
+  {title:"Alert #1 — High-volume login failures",type:"Brute Force",owasp:"API2:2023",data:[["Source IP","172.18.0.1 (external, unknown)"],["Target endpoint","/identity/api/auth/login"],["Request count","30 POST requests in 6 seconds"],["HTTP response","401 Unauthorised — every attempt failed"],["Pattern","Sequential wrong passwords tried one by one"],["Account lockout","None — account was never locked"],["Time of alert","03:55 AM — outside business hours"],["User agent","Python-requests/2.28 (automated script)"]],plain:"Someone used an automated script to guess a user's password 30 times in 6 seconds. The system never locked the account out.",correctSev:"HIGH",ai:{sev:"HIGH",conf:"75%",action:"Block source IP. Reset account credentials. Enable account lockout on identity service.",esc:"YES",fp:"Low",reason:"30 sequential POST requests with wrong passwords at 3AM from automated script. No lockout confirms API2:2023."}},
+  {title:"Alert #2 — Unauthorised data access",type:"BOLA",owasp:"API1:2023",data:[["Source IP","172.18.0.1 (external, unknown)"],["Target endpoint","/community/api/v2/community/posts/recent"],["Request count","20 GET requests in 6 seconds"],["HTTP response","200 OK — data returned every time"],["Data exposed","robot001, pogba006, adam007 — emails and vehicle IDs"],["Authentication","Valid login token — accessing OTHER accounts"],["Time of alert","03:52 AM — outside business hours"],["User agent","Python-requests/2.28 (automated script)"]],plain:"A logged-in user is reading private data belonging to other accounts. Their login is valid but the API returns other people's personal records.",correctSev:"HIGH",ai:{sev:"HIGH",conf:"80%",action:"Revoke user token. Review all accessed records. Escalate for data breach assessment.",esc:"YES",fp:"Low",reason:"20 successful requests returning other users' personal data. Authenticated user accessing objects they don't own — confirmed BOLA."}},
+  {title:"Alert #3 — Excessive API requests",type:"Rate limit abuse",owasp:"API4:2023",data:[["Source IP","172.18.0.1 (external, unknown)"],["Target endpoint","/identity/api/v2/user/dashboard"],["Request count","100 requests in 60 seconds"],["HTTP response","200 OK — no throttling applied"],["Normal usage","2 to 5 requests per session"],["Rate limiting","None — API has no limits enforced"],["Time of alert","04:00 AM — outside business hours"],["Duration","2 minutes of sustained requests"]],plain:"Someone is hitting the same API endpoint 100 times per minute — 20x more than normal. The API has no mechanism to stop them.",correctSev:"HIGH",ai:{sev:"HIGH",conf:"70%",action:"Implement rate limiting. Block source IP. Monitor for scraping or DoS intent.",esc:"YES",fp:"Medium",reason:"100 req/min is 20x normal usage. No throttling detected — API4:2023 confirmed."}}
+];
+
+// ── SELECTION TRACKER ────────────────────────────────────
+const SEL = {};
+function pick(gid, el) {
+  SEL[gid] = el.textContent.trim();
+  document.querySelectorAll('#' + gid + ' .ch, #' + gid + ' .rb').forEach(e => e.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function getSel(gid) { return SEL[gid] || null; }
+function clearSel(...keys) { keys.forEach(k => delete SEL[k]); }
+
+// ── STUDY STATE ──────────────────────────────────────────
+let st = {name:'',bg:'',idx:0,phase:'a',ts:0,timer:null,resp:[],overall:{}};
+
+function showSec(id) {
+  ['sec-welcome','sec-alerts','sec-overall','sec-done'].forEach(s => {
+    document.getElementById(s).style.display = s === id ? 'block' : 'none';
+  });
+  window.scrollTo(0,0);
+}
+
+function updateProgress() {
+  const p = document.getElementById('progress');
+  p.innerHTML = ALERTS.map((_,i) =>
+    `<div class="pd ${i<st.idx?'done':i===st.idx?'active':''}"></div><div class="pd ${i<st.idx?'done':''}"></div>`
+  ).join('');
+}
+
+function startStudy() {
+  const name = document.getElementById('w-name').value.trim();
+  const bg = getSel('w-bg');
+  let ok = true;
+  document.getElementById('e-name').classList.toggle('show', !name);
+  document.getElementById('e-bg').classList.toggle('show', !bg);
+  if (!name || !bg) return;
+  st = {name, bg, idx:0, phase:'a', ts:0, timer:null, resp:[], overall:{}};
+  showSec('sec-alerts');
+  renderAlert();
+}
+
+function renderAlert() {
+  updateProgress();
+  const a = ALERTS[st.idx];
+  const isA = st.phase === 'a';
+  let h = '';
+
+  h += `<div style="margin-bottom:1rem">
+    <span class="tag ${isA?'tag-warn':'tag-info'}">${isA?'⚠ ROUND A — YOUR ASSESSMENT':'◈ ROUND B — AI COMPARISON'}</span>
+  </div>
+  <h2 style="font-size:18px;color:#c8e0f0;margin-bottom:1rem">${a.title}</h2>`;
+
+  h += `<div class="section">
+    <div class="section-title" style="color:#4a7090">ALERT DATA · ${a.type} · ${a.owasp}</div>
+    <table class="data-table">`;
+  a.data.forEach(([k,v]) => { h += `<tr><td>${k}</td><td><strong>${v}</strong></td></tr>`; });
+  h += `</table>
+    <div class="plain-box"><strong style="color:#00d4ff">In plain terms:</strong> ${a.plain}</div>
+  </div>`;
+
+  if (!isA) {
+    h += `<div class="section" style="border-color:#00d4ff22">
+      <div class="section-title" style="color:#4da3ff">AI TRIAGE OUTPUT · LLAMA 3.2 VIA OLLAMA</div>
+      <div class="ai-box">
+        <div class="ai-row"><span class="ai-key">SEVERITY</span><span class="ai-val"><span class="tag tag-warn">${a.ai.sev}</span></span></div>
+        <div class="ai-row"><span class="ai-key">ATTACK TYPE</span><span class="ai-val">${a.type} — ${a.owasp}</span></div>
+        <div class="ai-row"><span class="ai-key">CONFIDENCE</span><span class="ai-val">${a.ai.conf}</span></div>
+        <div class="ai-row"><span class="ai-key">ACTION</span><span class="ai-val" style="max-width:55%">${a.ai.action}</span></div>
+        <div class="ai-row"><span class="ai-key">ESCALATE</span><span class="ai-val">${a.ai.esc}</span></div>
+        <div class="ai-row"><span class="ai-key">FALSE POS RISK</span><span class="ai-val">${a.ai.fp}</span></div>
+        <div class="ai-reason"><strong style="color:#22d3c8">AI REASONING:</strong> ${a.ai.reason}</div>
+      </div>
+    </div>`;
+  }
+
+  h += `<div class="section">`;
+  if (isA) {
+    h += `<div style="background:#020810;border:1px solid #0d2040;border-radius:6px;padding:10px 14px;display:flex;align-items:center;gap:10px;font-size:13px;color:#4a7090;margin-bottom:1.25rem">
+      ⏱ Time on this alert: <strong id="timer-val" style="font-size:18px;color:#c8e0f0;font-family:monospace">0:00</strong>
+    </div>
+    <div style="font-size:13px;color:#c8e0f0;font-weight:700;margin-bottom:.5rem">HOW SERIOUS IS THIS ALERT?</div>
+    <div class="choices" id="sev-pick">
+      <div class="ch" onclick="pick('sev-pick',this)">Critical — immediate action</div>
+      <div class="ch" onclick="pick('sev-pick',this)">High — action needed soon</div>
+      <div class="ch" onclick="pick('sev-pick',this)">Medium — monitor closely</div>
+      <div class="ch" onclick="pick('sev-pick',this)">Low — log and review later</div>
+    </div>
+    <div class="err" id="e-sev">Please select a severity level.</div>
+    <div style="border-top:1px solid #0d2040;margin:1.25rem 0"></div>
+    <div style="font-size:13px;color:#c8e0f0;font-weight:700;margin-bottom:.75rem">WHAT ACTION WOULD YOU TAKE?</div>
+    <div class="choices" id="act-pick">
+      <div class="ch" onclick="pick('act-pick',this)">Block source IP</div>
+      <div class="ch" onclick="pick('act-pick',this)">Monitor and watch</div>
+      <div class="ch" onclick="pick('act-pick',this)">Escalate to Tier 2</div>
+      <div class="ch" onclick="pick('act-pick',this)">Log and ignore</div>
+    </div>
+    <div class="err" id="e-act">Please select an action.</div>
+    <div style="border-top:1px solid #0d2040;margin:1.25rem 0"></div>
+    <div style="font-size:13px;color:#c8e0f0;font-weight:700;margin-bottom:.5rem">HOW CONFIDENT ARE YOU? (1 = just guessing · 5 = very confident)</div>
+    <div class="ratings" id="conf-a">
+      <div class="rb" onclick="pick('conf-a',this)">1</div><div class="rb" onclick="pick('conf-a',this)">2</div><div class="rb" onclick="pick('conf-a',this)">3</div><div class="rb" onclick="pick('conf-a',this)">4</div><div class="rb" onclick="pick('conf-a',this)">5</div>
+    </div>
+    <div class="err" id="e-conf">Please rate your confidence.</div>`;
+  } else {
+    const pr = st.resp[st.idx];
+    h += `<div class="prev-answer">YOUR ROUND A — Severity: <strong>${pr.sev}</strong> · Action: <strong>${pr.act}</strong> · Confidence: <strong>${pr.confA}/5</strong> · Time: <strong>${pr.time}s</strong></div>
+    <div style="font-size:13px;color:#c8e0f0;font-weight:700;margin-bottom:.75rem">DID YOU CHANGE YOUR SEVERITY AFTER SEEING THE AI?</div>
+    <div class="choices" id="changed-pick">
+      <div class="ch" onclick="pick('changed-pick',this);document.getElementById('new-sev').style.display='block'">Yes, I changed it</div>
+      <div class="ch" onclick="pick('changed-pick',this);document.getElementById('new-sev').style.display='none'">No, I kept my answer</div>
+    </div>
+    <div class="err" id="e-changed">Please select an option.</div>
+    <div id="new-sev" style="display:none;margin-top:1rem">
+      <div style="font-size:13px;color:#c8e0f0;font-weight:700;margin-bottom:.75rem">WHAT DID YOU CHANGE IT TO?</div>
+      <div class="choices" id="newsev-pick">
+        <div class="ch" onclick="pick('newsev-pick',this)">Critical</div><div class="ch" onclick="pick('newsev-pick',this)">High</div><div class="ch" onclick="pick('newsev-pick',this)">Medium</div><div class="ch" onclick="pick('newsev-pick',this)">Low</div>
+      </div>
+    </div>
+    <div style="border-top:1px solid #0d2040;margin:1.25rem 0"></div>
+    <div style="font-size:13px;color:#c8e0f0;font-weight:700;margin-bottom:.5rem">CONFIDENCE NOW? (1 = not confident · 5 = very confident)</div>
+    <div class="ratings" id="conf-b">
+      <div class="rb" onclick="pick('conf-b',this)">1</div><div class="rb" onclick="pick('conf-b',this)">2</div><div class="rb" onclick="pick('conf-b',this)">3</div><div class="rb" onclick="pick('conf-b',this)">4</div><div class="rb" onclick="pick('conf-b',this)">5</div>
+    </div>
+    <div class="err" id="e-confb">Please rate your confidence.</div>
+    <div style="border-top:1px solid #0d2040;margin:1.25rem 0"></div>
+    <div style="font-size:13px;color:#c8e0f0;font-weight:700;margin-bottom:.5rem">HOW HELPFUL WAS THE AI? (1 = not helpful · 5 = very helpful)</div>
+    <div class="ratings" id="helpful">
+      <div class="rb" onclick="pick('helpful',this)">1</div><div class="rb" onclick="pick('helpful',this)">2</div><div class="rb" onclick="pick('helpful',this)">3</div><div class="rb" onclick="pick('helpful',this)">4</div><div class="rb" onclick="pick('helpful',this)">5</div>
+    </div>
+    <div class="err" id="e-helpful">Please rate helpfulness.</div>
+    <div style="border-top:1px solid #0d2040;margin:1.25rem 0"></div>
+    <div style="font-size:13px;color:#c8e0f0;font-weight:700;margin-bottom:.75rem">DID YOU TRUST THE AI RECOMMENDATION?</div>
+    <div class="choices" id="trust-pick">
+      <div class="ch" onclick="pick('trust-pick',this)">Yes — fully</div><div class="ch" onclick="pick('trust-pick',this)">Yes — with some doubt</div><div class="ch" onclick="pick('trust-pick',this)">Partially</div><div class="ch" onclick="pick('trust-pick',this)">No — I disagreed</div>
+    </div>
+    <div class="err" id="e-trust2">Please select an option.</div>`;
+  }
+  h += `<button class="btn" onclick="nextPhase()" style="margin-top:1.5rem">${isA?'CONTINUE TO AI OUTPUT →':'NEXT ALERT →'}</button></div>`;
+  document.getElementById('alert-content').innerHTML = h;
+  if (isA) {
+    st.ts = Date.now();
+    if (st.timer) clearInterval(st.timer);
+    st.timer = setInterval(() => {
+      const el = document.getElementById('timer-val');
+      if (el) { const s = Math.floor((Date.now()-st.ts)/1000); el.textContent = Math.floor(s/60)+':'+(s%60).toString().padStart(2,'0'); }
+    }, 1000);
+  }
+  window.scrollTo(0,0);
+}
+
+function nextPhase() {
+  const a = ALERTS[st.idx];
+  let ok = true;
+  const ce = id => { const e=document.getElementById(id); if(e) e.classList.remove('show'); };
+  const se = id => { const e=document.getElementById(id); if(e) e.classList.add('show'); ok=false; };
+
+  if (st.phase === 'a') {
+    const sev=getSel('sev-pick'), act=getSel('act-pick'), conf=getSel('conf-a');
+    ce('e-sev');ce('e-act');ce('e-conf');
+    if(!sev)se('e-sev'); if(!act)se('e-act'); if(!conf)se('e-conf');
+    if(!ok)return;
+    clearInterval(st.timer);
+    const t = Math.round((Date.now()-st.ts)/1000);
+    st.resp.push({idx:st.idx,type:a.type,owasp:a.owasp,correctSev:a.correctSev,sev,act,confA:parseInt(conf),time:t,accurate:sev.toLowerCase().includes(a.correctSev.toLowerCase())});
+    clearSel('sev-pick','act-pick','conf-a');
+    st.phase = 'b';
+    renderAlert();
+  } else {
+    const changed=getSel('changed-pick'), confB=getSel('conf-b'), helpful=getSel('helpful'), trust=getSel('trust-pick');
+    ce('e-changed');ce('e-confb');ce('e-helpful');ce('e-trust2');
+    if(!changed)se('e-changed'); if(!confB)se('e-confb'); if(!helpful)se('e-helpful'); if(!trust)se('e-trust2');
+    if(!ok)return;
+    const r = st.resp[st.idx];
+    r.changed=changed.startsWith('Yes'); r.newSev=r.changed?getSel('newsev-pick'):null;
+    r.confB=parseInt(confB); r.helpful=parseInt(helpful); r.trust=trust; r.confDelta=r.confB-r.confA;
+    clearSel('changed-pick','newsev-pick','conf-b','helpful','trust-pick');
+    st.idx++; st.phase='a';
+    if(st.idx>=ALERTS.length) showSec('sec-overall'); else renderAlert();
+  }
+}
+
+function finishStudy() {
+  let ok = true;
+  const useful=getSel('o-useful'), trust=getSel('o-trust');
+  document.getElementById('e-useful').classList.toggle('show',!useful);
+  document.getElementById('e-trust').classList.toggle('show',!trust);
+  if(!useful||!trust)return;
+  st.overall={useful:parseInt(useful),trust,improve:document.getElementById('o-improve').value.trim(),ts:new Date().toISOString()};
+  const r=st.resp;
+  const avgT=Math.round(r.reduce((s,x)=>s+x.time,0)/r.length);
+  const avgCA=Math.round(r.reduce((s,x)=>s+x.confA,0)/r.length*10)/10;
+  const avgCB=Math.round(r.reduce((s,x)=>s+x.confB,0)/r.length*10)/10;
+  const acc=r.filter(x=>x.accurate).length;
+  const chg=r.filter(x=>x.changed).length;
+  const avgH=Math.round(r.reduce((s,x)=>s+x.helpful,0)/r.length*10)/10;
+  const row=(k,v)=>`<div class="summary-row"><span style="color:#4a7090">${k}</span><strong>${v}</strong></div>`;
+  document.getElementById('summary').innerHTML=
+    row('Participant',st.name)+row('Background',st.bg)+
+    row('Avg time per alert (Round A)',avgT+'s')+
+    row('Severity accuracy before AI',acc+'/'+r.length+' correct')+
+    row('Changed decision after AI',chg+'/'+r.length+' alerts')+
+    row('Avg confidence before AI',avgCA+'/5')+
+    row('Avg confidence after AI',avgCB+'/5')+
+    row('Confidence change',(avgCB>avgCA?'▲ +':'▼ ')+Math.round((avgCB-avgCA)*10)/10)+
+    row('Avg AI helpfulness',avgH+'/5')+
+    row('Overall AI rating',st.overall.useful+'/10')+
+    row('Trust AI in real SOC',st.overall.trust);
+  const exportJson=JSON.stringify({participant:st.name,background:st.bg,timestamp:st.overall.ts,alerts:r,overall:st.overall,metrics:{avgTime:avgT,avgConfA:avgCA,avgConfB:avgCB,confChange:Math.round((avgCB-avgCA)*10)/10,accuracy:acc+'/'+r.length,changed:chg+'/'+r.length,avgHelpful:avgH}},null,2);
+  document.getElementById('export').value=exportJson;
+  const pre=document.getElementById('export-pre');if(pre)pre.textContent=exportJson;
+  showSec('sec-done');
+}
+
+// ── ANIMATION ────────────────────────────────────────────
+const mx=document.getElementById('mx');
+const ctx=mx.getContext('2d');
+let mxOn=true,animDone=false;
+
+function initMx(){
+  mx.width=window.innerWidth; mx.height=window.innerHeight;
+  const chars='01ABCDEFアカサ01BOLASPL01API';
+  const cols=Math.floor(mx.width/20);
+  const drops=Array(cols).fill(0).map(()=>Math.random()*-40);
+  function draw(){
+    if(!mxOn)return;
+    ctx.fillStyle='rgba(2,12,24,0.055)'; ctx.fillRect(0,0,mx.width,mx.height);
+    ctx.font='13px monospace';
+    drops.forEach((y,i)=>{
+      ctx.fillStyle=Math.random()>.85?'rgba(0,212,255,0.12)':'rgba(13,32,64,0.18)';
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*20,y*20);
+      if(y*20>mx.height&&Math.random()>.975)drops[i]=0;
+      drops[i]+=.6;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+window.addEventListener('resize',()=>{mx.width=window.innerWidth;mx.height=window.innerHeight;});
+initMx();
+
+function addLine(txt,color,bold){
+  const b=document.getElementById('term-body'); if(!b)return;
+  const d=document.createElement('div'); d.className='anim-line';
+  d.style.cssText='color:'+(color||'#c8e0f0')+';opacity:0;transition:opacity .25s'+(bold?';font-weight:700':'');
+  d.textContent=txt; b.appendChild(d); requestAnimationFrame(()=>{d.style.opacity='1';}); b.scrollTop=b.scrollHeight;
+}
+async function typeCmd(txt){
+  const b=document.getElementById('term-body'); if(!b)return;
+  const d=document.createElement('div'); d.style.color='#c8e0f0';
+  const c=document.createElement('span'); c.className='blink'; d.appendChild(c); b.appendChild(d);
+  for(const ch of txt){d.insertBefore(document.createTextNode(ch),c);await sleep(38+Math.random()*20);}
+  setTimeout(()=>{try{d.removeChild(c);}catch(e){}},200);
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function setThreat(t,c){const el=document.getElementById('threat-lbl');if(el){el.textContent='◆ '+t;el.style.color=c;}}
+function flashTerm(c){const tw=document.getElementById('term-win');if(!tw)return;tw.style.borderColor=c;tw.style.boxShadow='0 0 12px '+c+'44';setTimeout(()=>{tw.style.borderColor='#0d2040';tw.style.boxShadow='none';},500);}
+
+async function runAnim(){
+  await sleep(1800);
+  document.getElementById('anim-title').style.opacity='0';
+  await sleep(500);
+  document.getElementById('term-wrap').style.opacity='1';
+  await sleep(700);
+  if(animDone)return;
+
+  await typeCmd('python3 bola.py --target http://localhost:8888 --count 20');
+  await sleep(250);
+  addLine('[*] CyberShield Research Tool v1.0 — BOLA exploit (API1:2023)','#4da3ff');
+  addLine('[*] Endpoint: /community/api/v2/community/posts/recent','#4da3ff');
+  addLine('[*] Auth: Bearer eyJhbGciOiJSUzI1NiJ9... (valid session)','#2a4060');
+  await sleep(300);
+  addLine('[*] Sending 20 authenticated GET requests...','#4da3ff');
+  await sleep(350);
+
+  const exposed=[['001','robot001@example.com'],['002','pogba006@example.com'],['003','adam007@example.com']];
+  const ctr=document.getElementById('req-ctr');
+  for(let i=1;i<=20;i++){
+    if(animDone)return;
+    if(ctr)ctr.textContent='REQ '+String(i).padStart(3,'0')+'/020';
+    if(i<=3){
+      addLine('[REQ '+exposed[i-1][0]+'] → 200 OK   data returned','#00e5a0');
+      await sleep(80);
+      addLine('         ▸ EXPOSED: '+exposed[i-1][1],'#ff6688',true);
+      flashTerm('#ff4d6d'); setThreat('ELEVATED','#ffb020'); await sleep(280);
+    } else { await sleep(55); }
+  }
+  if(ctr)ctr.textContent='';
+  addLine('[REQ 004-020] 17 more records accessed silently...','#2a4060');
+  addLine('','');
+  addLine('[RESULT] 20/20 requests · 3 user accounts EXPOSED · BOLA confirmed','#ff4d6d',true);
+  flashTerm('#ff4d6d'); setThreat('HIGH','#ff4d6d'); await sleep(700);
+  if(animDone)return;
+
+  addLine('','');
+  await typeCmd('python3 bruteforce.py --email victim@crapi.com --count 30');
+  await sleep(250);
+  addLine('[*] CyberShield Research Tool v1.0 — Brute Force (API2:2023)','#4da3ff');
+  addLine('[TRY 001-010] wrongpassword1..10 → 401 Unauthorised','#2a4060');
+  await sleep(180);
+  addLine('[TRY 011-020] wrongpassword11..20 → 401 Unauthorised','#2a4060');
+  await sleep(180);
+  addLine('[TRY 021-030] wrongpassword21..30 → 401 Unauthorised','#2a4060');
+  await sleep(250);
+  addLine('[RESULT] NO ACCOUNT LOCKOUT DETECTED — API2:2023 confirmed','#ff4d6d',true);
+  setThreat('CRITICAL','#ff4d6d'); flashTerm('#ff4d6d'); await sleep(700);
+  if(animDone)return;
+
+  addLine('','');
+  addLine('──────────────────── SPLUNK DETECTION ──────────────────────','#0d2040');
+  addLine('[SPLUNK] SPL rule fired → index=api_logs | stats count | where count > 5','#4da3ff');
+  addLine('[SPLUNK] Events: 50 · Source: 172.18.0.1 · Severity: HIGH','#4da3ff');
+  addLine('[MLTK]   BOLA flagged as outlier · MAD algorithm · 85% confidence','#4da3ff');
+  flashTerm('#4da3ff'); await sleep(400);
+  addLine('[AI]     Routing → Llama 3.2 via Ollama (localhost:11434)...','#22d3c8');
+  await sleep(450);
+  addLine('[AI]     SEVERITY: HIGH · CONFIDENCE: 80% · ESCALATE: YES','#22d3c8',true);
+  addLine('[AI]     ACTION: Revoke token · Block IP · Notify Tier 2','#22d3c8');
+  addLine('[AI]     Triage time: 4.2s vs analyst baseline: 6m 40s','#22d3c8');
+  await sleep(900);
+  if(animDone)return;
+
+  const ao=document.getElementById('alert-overlay');
+  ao.style.opacity='1'; ao.style.pointerEvents='auto';
+  await sleep(3000);
+  if(!animDone)skipAnim();
+}
+
+function skipAnim(){
+  if(animDone)return; animDone=true; mxOn=false;
+  document.getElementById('anim-screen').style.display='none';
+  document.getElementById('study-screen').style.display='block';
+}
+
+runAnim();
+</script>
+</body>
+</html>
